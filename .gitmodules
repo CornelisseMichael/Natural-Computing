@@ -1,0 +1,3 @@
+[submodule "Assignment-1/artistoo"]
+	path = Assignment-1/artistoo
+	url = https://github.com/ingewortel/artistoo.git
