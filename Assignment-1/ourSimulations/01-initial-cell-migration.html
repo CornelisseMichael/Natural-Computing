@@ -1,158 +1,163 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Assignment 01</title>
-<link rel="stylesheet" href="../../css/explorable.css">
-<style type="text/css">
-body{
-	 padding-left : 5px;
-	 padding-right: 5px;
-	 padding-top: 0px;
-	 margin: 0px;
-}
+<html lang="en">
 
-</style>
-<h1> Assignment 1A, group 1</h1>
-<h2> initial cell migration, no obstacles</h2>
-<p> number of cells = 75; Adhesion: 20; <br> Volume: 200; lambda-volume: 50; <br>
-	Perimeter: 80; lambda_perimeter: 2 <br>
-	max_act: 20; lambda_act: 200 <br>
-	T: 20</p>
-
-<script src="./artistoo.js"></script>
-<script>
-"use strict"
-let width = 200
-let height = 200
-let config = {
-	// Grid settings
-	ndim : 2,
-	field_size : [width,height],
-	
-	// CPM parameters and configuration
-	conf : {
-		// Basic CPM parameters
-		torus : [true,true],						// Should the grid have linked borders?
-		T : 20,								// CPM temperature
-		
-		// Constraint parameters. 
-		// Mostly these have the format of an array in which each element specifies the
-		// parameter value for one of the cellkinds on the grid.
-		// First value is always cellkind 0 (the background) and is often not used.
-				
-		// Adhesion parameters:
-		J: [[0,20], [20,0]],
-		
-		// VolumeConstraint parameters
-		LAMBDA_V: [0,50],					// VolumeConstraint importance per cellkind
-		V: [0,200],							// Target volume of each cellkind
-		
-		// PerimeterConstraint parameters
-		LAMBDA_P: [0,2],						// PerimeterConstraint importance per cellkind
-		P : [0,180],						// Target perimeter of each cellkind
-		
-		// ActivityConstraint parameters
-		LAMBDA_ACT : [0,200],				// ActivityConstraint importance per cellkind
-		MAX_ACT : [0,80],					// Activity memory duration per cellkind
-		ACT_MEAN : "geometric"				// Is neighborhood activity computed as a
-											// "geometric" or "arithmetic" mean?
-
-	},
-	
-	// Simulation setup and configuration
-	simsettings : {
-	
-		// Cells on the grid
-		NRCELLS : [0],						// Number of cells to seed for all
-											// non-background cellkinds.
-		// Runtime etc
-		BURNIN : 0,
-		RUNTIME : 15001,
-		RUNTIME_BROWSER : "Inf",
-		
-		// Visualization
-		CANVASCOLOR : "eaecef",
-		CELLCOLOR : ["000000"],
-		ACTCOLOR : [true],					// Should pixel activity values be displayed?
-		SHOWBORDERS : [false],				// Should cellborders be displayed?
-		zoom : 2,							// zoom in on canvas with this factor.
-		
-		// Output images
-		SAVEIMG : false,					// Should a png image of the grid be saved
-											// during the simulation?
-		
-		// Output stats etc
-		STATSOUT : { browser: false, node: true }, // Should stats be computed?
-		LOGRATE : 10							// Output stats every <LOGRATE> MCS.
-
-	}
-}
-/*	---------------------------------- */
-let sim, meter
-
-
-function initialize(){
-	let custommethods = {
-			initializeGrid : initializeGrid,
-			buildChannel : buildChannel,
-			drawBelow : drawBelow
-		 }
-
-	sim = new CPM.Simulation( config, custommethods )
-	sim.Cim = new CPM.Canvas( sim.C, {
-		zoom:sim.conf.zoom, 
-		parentElement : document.getElementById("sim")
-	} )
-	sim.helpClasses[ "canvas" ] = true
-	step()
-}
-
-
-function step(){
-	for( let i = 0; i < 5; i++ ){
-		sim.step()
-	}
-	
-
-	if( sim.conf["RUNTIME_BROWSER"] == "Inf" | sim.time+1 < sim.conf["RUNTIME_BROWSER"] ){
-		requestAnimationFrame( step )
-	}
-}
-
-function drawBelow(){
-	this.Cim.drawPixelSet( this.channelvoxels, "AAAAAA" ) 
-}
-
-function initializeGrid(){
-	
-		// add the initializer if not already there
-		if( !this.helpClasses["gm"] ){ this.addGridManipulator() }
-		this.buildChannel()
-		for (let i = 0; i < 100; i++){
-			let x =  Math.floor(Math.random() * width);
-			let y =  Math.floor(Math.random() * height);
-			this.gm.seedCellAt(1, [x, y])
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Assignment 01</title>
+	<link rel="stylesheet" href="../../css/explorable.css">
+	<style type="text/css">
+		body {
+			padding-left: 5px;
+			padding-right: 5px;
+			padding-top: 0px;
+			margin: 0px;
 		}
-}
-	
-function buildChannel(){
-		
-	
-		this.channelvoxels = []
-		this.C.add( new CPM.BorderConstraint({
-			BARRIER_VOXELS : this.channelvoxels
-		}) )
-}
+	</style>
+	<h1> Assignment 1A, group 1</h1>
+	<h2> initial cell migration, no obstacles</h2>
+	<p> number of cells = 75; Adhesion: 20; <br> Volume: 200; lambda-volume: 50; <br>
+		Perimeter: 180; lambda_perimeter: 2 <br>
+		max_act: 80; lambda_act: 200 <br>
+		T: 20</p>
+
+	<script src="./artistoo.js"></script>
+	<script>
+		"use strict"
+		let width = 200
+		let height = 200
+		let config = {
+			// Grid settings
+			ndim: 2,
+			field_size: [width, height],
+
+			// CPM parameters and configuration
+			conf: {
+				// Basic CPM parameters
+				torus: [true, true],						// Should the grid have linked borders?
+				T: 20,								// CPM temperature
+
+				// Constraint parameters. 
+				// Mostly these have the format of an array in which each element specifies the
+				// parameter value for one of the cellkinds on the grid.
+				// First value is always cellkind 0 (the background) and is often not used.
+
+				// Adhesion parameters:
+				J: [[0, 20], [20, 0]],
+
+				// VolumeConstraint parameters
+				LAMBDA_V: [0, 50],					// VolumeConstraint importance per cellkind
+				V: [0, 200],							// Target volume of each cellkind
+
+				// PerimeterConstraint parameters
+				LAMBDA_P: [0, 2],						// PerimeterConstraint importance per cellkind
+				P: [0, 180],						// Target perimeter of each cellkind
+
+				// ActivityConstraint parameters
+				LAMBDA_ACT: [0, 200],				// ActivityConstraint importance per cellkind
+				MAX_ACT: [0, 80],					// Activity memory duration per cellkind
+				ACT_MEAN: "geometric"				// Is neighborhood activity computed as a
+				// "geometric" or "arithmetic" mean?
+
+			},
+
+			// Simulation setup and configuration
+			simsettings: {
+
+				// Cells on the grid
+				NRCELLS: [0],						// Number of cells to seed for all
+				// non-background cellkinds.
+				// Runtime etc
+				BURNIN: 0,
+				RUNTIME: 15001,
+				RUNTIME_BROWSER: "Inf",
+
+				// Visualization
+				CANVASCOLOR: "eaecef",
+				CELLCOLOR: ["000000"],
+				ACTCOLOR: [true],					// Should pixel activity values be displayed?
+				SHOWBORDERS: [false],				// Should cellborders be displayed?
+				zoom: 2,							// zoom in on canvas with this factor.
+
+				// Output images
+				SAVEIMG: false,					// Should a png image of the grid be saved
+				// during the simulation?
+
+				// Output stats etc
+				STATSOUT: { browser: false, node: true }, // Should stats be computed?
+				LOGRATE: 10							// Output stats every <LOGRATE> MCS.
+
+			}
+		}
+		/*	---------------------------------- */
+		let sim, meter
+		let numCells = 100
 
 
-// No custom methods.
-</script>
+		function initialize() {
+			let custommethods = {
+				initializeGrid: initializeGrid,
+				buildChannel: buildChannel,
+				drawBelow: drawBelow
+			}
+
+			sim = new CPM.Simulation(config, custommethods)
+			sim.Cim = new CPM.Canvas(sim.C, {
+				zoom: sim.conf.zoom,
+				parentElement: document.getElementById("sim")
+			})
+			sim.helpClasses["canvas"] = true
+			step()
+		}
+
+
+		function step() {
+			for (let i = 0; i < 5; i++) {
+				sim.step()
+			}
+
+
+			if (sim.conf["RUNTIME_BROWSER"] == "Inf" | sim.time + 1 < sim.conf["RUNTIME_BROWSER"]) {
+				requestAnimationFrame(step)
+			}
+		}
+
+		function drawBelow() {
+			this.Cim.drawPixelSet(this.channelvoxels, "AAAAAA")
+		}
+
+		function initializeGrid() {
+
+			// add the initializer if not already there
+			if (!this.helpClasses["gm"]) { this.addGridManipulator() }
+			this.buildChannel()
+			for (let i = 0; i < numCells; i++) {
+				let x = Math.floor(Math.random() * width);
+				let y = Math.floor(Math.random() * height);
+				this.gm.seedCellAt(1, [x, y])
+			}
+		}
+
+		function buildChannel() {
+
+
+			this.channelvoxels = []
+			this.C.add(new CPM.BorderConstraint({
+				BARRIER_VOXELS: this.channelvoxels
+			}))
+		}
+
+
+		// No custom methods.
+	</script>
 </head>
+
 <body onload="initialize()">
 
-<div class="container">
+	<div class="container">
 
-<div id="sim" class="simcontainer"></div>
+		<div id="sim" class="simcontainer"></div>
 
-</div>
+	</div>
 </body>
+
 </html>
