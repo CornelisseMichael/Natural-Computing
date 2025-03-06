@@ -40,26 +40,53 @@ class Particle {
 		return this.S.normalizeVector(a)
 	}
 	
-	// should return a unit vector in average neighbor direction for neighbors within 
-	// distance neighborRadius 
-	alignmentVector( neighborRadius ){
+	// should return a unit vector in average neighbour direction for neighbours within 
+	// distance neighbourRadius 
+	alignmentVector( neighbourRadius ){
+		let nbrs = this.S.neighbours(this, neighbourRadius)
+		if (nbrs.length == 0) return [0, 0]
+		let sum = [0, 0]
+		for (let i = 0; i < nbrs.length; i++){
+			sum = this.addVectors(sum, nbrs[i].dir)
+		}
+		let avg = this.multiplyVector(sum, 1/nbrs.length)
+		let al_dir = this.normalizeVector(avg)
 		
-		return this.dir
+		return al_dir
 	
 	}
 	
 	// should return a unit vector in the direction from current position to the 
-	// average position of neighbors within distance neighborRadius 
-	cohesionVector( neighborRadius ){
+	// average position of neighbours within distance neighbourRadius 
+	cohesionVector( neighbourRadius ){
+		let nbrs = this.S.neighbours(this, neighbourRadius)
+		if (nbrs.length == 0) return [0, 0]
+		let sum = [0, 0]
+		for (let i = 0; i < nbrs.length; i++){
+			sum = this.addVectors(sum, nbrs[i].pos)
+		}
+		let avg = this.multiplyVector(sum, 1/nbrs.length)
+		let coh_dir = this.subtractVectors(avg, this.pos)
+		coh_dir = this.normalizeVector(coh_dir)
 		
-		return this.dir
+		return coh_dir
 	
 	}
 	
 	// as cohesionVector, but now return the opposite direction for the given 
-	separationVector( neighborRadius ){
+	separationVector( neighbourRadius ){
+		let nbrs = this.S.neighbours(this, neighbourRadius)
+		if (nbrs.length == 0) return [0, 0]
 		
-		return this.dir 
+		let sum = [0, 0]
+		for (let i = 0; i < nbrs.length; i++){
+			sum = this.addVectors(sum, nbrs[i].pos)
+		}
+		let avg = this.multiplyVector(sum, 1/nbrs.length)
+		let sep_dir = this.subtractVectors(this.pos, avg)
+		sep_dir = this.normalizeVector(sep_dir)
+		
+		return sep_dir
 		
 	}
 	
@@ -77,9 +104,16 @@ class Particle {
 		// alignment, cohesion, and separation directions. 
 		// Make sure to update the properties this.dir and this.pos accordingly.
 		// What happens when the new position lies across the field boundary? 
+		let nbrs = this.S.neighbours(this, this.S.conf.outerRadius)
 		
-		this.pos = this.pos
-		this.dir = this.dir 	
+		this.pos = this.addVectors(this.pos, this.dir)
+		let new_dir = this.addVectors(this.addVectors(align, cohesion), separation)
+		this.dir = this.normalizeVector(this.addVectors(this.dir, new_dir))
+		
+		// To make it so that when the boids leave the canvas they appear at the other side. Might be nice to turn off idk.
+		this.pos = this.S.wrap(this.pos)
+		
+		
 		
 	}
 	

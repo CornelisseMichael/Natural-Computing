@@ -322,6 +322,9 @@ class Particle {
 		let new_dir = this.addVectors(this.addVectors(align, cohesion), separation)
 		this.dir = this.normalizeVector(this.addVectors(this.dir, new_dir))
 		
+		// To make it so that when the boids leave the canvas they appear at the other side. Might be nice to turn off idk.
+		this.pos = this.S.wrap(this.pos)
+		
 		
 		
 	}
