@@ -275,7 +275,8 @@ class Particle {
 		if (nbrs.length == 0) return [0, 0]
 		let sum = [0, 0]
 		for (let i = 0; i < nbrs.length; i++){
-			sum = this.addVectors(sum, nbrs[i].pos)
+			let wrapped_pos = this.S.wrap(nbrs[i].pos, this.pos)
+			sum = this.addVectors(sum, wrapped_pos)
 		}
 		let avg = this.multiplyVector(sum, 1/nbrs.length)
 		let coh_dir = this.subtractVectors(avg, this.pos)
@@ -292,7 +293,8 @@ class Particle {
 		
 		let sum = [0, 0]
 		for (let i = 0; i < nbrs.length; i++){
-			sum = this.addVectors(sum, nbrs[i].pos)
+			let wrapped_pos = this.S.wrap(nbrs[i].pos, this.pos)
+			sum = this.addVectors(sum, wrapped_pos)
 		}
 		let avg = this.multiplyVector(sum, 1/nbrs.length)
 		let sep_dir = this.subtractVectors(this.pos, avg)
