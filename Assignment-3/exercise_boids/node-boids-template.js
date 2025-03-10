@@ -409,7 +409,7 @@ canvas.drawSwarm()
 
 if( saveImg ) canvas.writePNG( `${imgpath}/boids-t${S.time}.png` )
 
-console.log( "time,id,x,y")
+console.log( "time,id,x,y, vx, vy")
 
 for( let t = 0; t <= conf.runTime; t++ ){
 	if( saveImg & t % 100 == 0 ){
@@ -421,7 +421,9 @@ for( let t = 0; t <= conf.runTime; t++ ){
 	
 	// log positions to the console
 	for( let p of S.swarm ){
-		let log = [ S.time, p.id, p.pos[0], p.pos[1] ]
+		let vx = p.dir[0]
+		let vy = p.dir[1]
+		let log = [ S.time, p.id, p.pos[0], p.pos[1], vx, vy]
 		console.log( log.join(",") )
 	}
 	
