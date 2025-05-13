@@ -24,16 +24,6 @@ bounds = [0,1,2,3,4]
 norm = colors.BoundaryNorm(bounds, cmap.N)
 
 
-# load in the map
-image_path = 'testroom.bmp'
-image = Image.open(image_path)
-image_array = np.array(image)
-
-mapping = {0: 3, 1: 0}
-mapped_array = np.vectorize(mapping.get)(image_array)
-
-print(mapped_array)
-
 def iterate(X):
     """Iterate the forest according to the forest-fire rules."""
 
@@ -73,8 +63,6 @@ X  = np.zeros((ny, nx))
 X[1:ny-1, 1:nx-1] = np.random.randint(0, 2, size=(ny-2, nx-2))
 X[1:ny-1, 1:nx-1] = np.random.random(size=(ny-2, nx-2)) < forest_fraction
 print(X)
-
-X = mapped_array
 
 fig = plt.figure(figsize=(25/3, 6.25))
 ax = fig.add_subplot(111)
