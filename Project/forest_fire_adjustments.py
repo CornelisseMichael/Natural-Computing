@@ -7,7 +7,7 @@ matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
-from PIL import Image
+# from PIL import Image
 #import mapLoading
 
 # Create a forest fire animation based on a simple cellular automaton model.
@@ -42,11 +42,16 @@ def iterate(X, i):
                 for dx,dy in neighbourhood:
                     # The diagonally-adjacent trees are further away, so
                     # only catch fire with a reduced probability:
-                    if abs(dx) == abs(dy) and np.random.random() < 0.573:
+                    if abs(dx) == abs(dy) and np.random.random() < 0.537:
                         continue
                     if X[iy+dy,ix+dx] == FIRE:
-                        X1[iy,ix] = FIRE
+                        if np.random.random() < 0.6:
+                            X1[iy,ix] = FIRE
+                        else:
+                            X[iy + dy, ix + dx] = TREE
+                            X1[iy, ix] = TREE
                         break
+
             if X[iy,ix] == FIRE:
                 if np.random.random() <= 0.005:
                     X1[iy,ix] = EMPTY
