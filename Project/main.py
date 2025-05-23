@@ -3,7 +3,7 @@ from IPython.display import display, HTML, Image
 from structures import Environment
 from structures import StructureLayer
 from fireSimulation import FireLayer, SmokeLayer
-import matplotlib; matplotlib.use("TkAgg")
+import matplotlib; matplotlib.use("TkAgg") #to run the animations in PyCharm
 import matplotlib.pyplot as plt
 
 
@@ -37,9 +37,8 @@ if __name__ == "__main__":
     #     env.display()
 
     # animation
-    anim = env.animate(steps=100, interval=200)
-    print(type(anim))
-    plt.show()
+    anim = env.animate(steps=100, interval=100)
+    plt.show() # to show the animation in your IDE (pycharm)
 
 
     #display(anim)
