@@ -11,9 +11,9 @@ def loadFromImage(path, source=None):
     if image.mode != 'RGB':
         image = image.convert('RGB')
     image_array = np.array(image)
-    mapping = {(0, 0, 0): 0,
-               (200, 200, 200): 1,
-               (255, 255, 255): 3,
+    mapping = {(0, 0, 0): 2, #door
+               (128, 128, 128): 1, #wall
+               (244, 255, 255): 0, #empty
                (255, 0, 0): 2,}
     default_value = 0
     mapped_array = np.apply_along_axis(
@@ -30,4 +30,7 @@ def loadFromfile(path, source=None):
     if source is not None:
         grid[source[0]][source[1]] = 2
     return grid
+
+array = loadFromImage('./maps/threedoorss+wall.png')
+np.save('numpytest', array)
 
