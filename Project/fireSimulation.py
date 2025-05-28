@@ -5,13 +5,14 @@ import random
 class FireLayer(BaseLayer):
     UNBURNED, BURNING, BURNED = 0,1,2
 
-    def __init__(self, w, h, *, p_ignite=0.6, burn_time=3, spread_interval=2):
+    def __init__(self, w, h, *, p_ignite=0.5, burn_time=4, spread_interval=2):
         super().__init__(w, h)
         self.p_ignite        = p_ignite
         self.burn_time       = burn_time
         self.spread_interval = spread_interval
         self._timer          = [[0]*w for _ in range(h)]
         self._step_count     = 0
+        self.neighborhood    = ((-1,-1), (-1,0), (-1,1), (0,-1), (0, 1), (1,-1), (1,0), (1,1))
 
     def ignite(self, x: int, y: int):
         self.grid[y][x]    = self.BURNING
@@ -41,20 +42,18 @@ class FireLayer(BaseLayer):
 
                 elif state == self.UNBURNED and \
                      (self._step_count % self.spread_interval) == 0:
-                    for dy in (-1,0,1):
-                        for dx in (-1,0,1):
-                            if dx==0 and dy==0: continue
-                            ny, nx = y+dy, x+dx
-                            if (0 <= nx < self.width and
-                                0 <= ny < self.height and
-                                self.grid[ny][nx] == self.BURNING and
-                                random.random() <= self.p_ignite):
-                                new_grid[y][x]   = self.BURNING
-                                new_timer[y][x]  = self.burn_time
-                                break
-                        else:
+                    for dx, dy in self.neighborhood:
+                        if abs(dx) == abs(dy) and random.random() < 0.537:
                             continue
-                        break
+                        ny, nx = y+dy, x+dx
+                        if (0 <= nx < self.width and
+                            0 <= ny < self.height and
+                            self.grid[ny][nx] == self.BURNING and
+                            random.random() < self.p_ignite):
+                            new_grid[y][x]   = self.BURNING
+                            new_timer[y][x]  = self.burn_time
+                    else:
+                        continue
 
         self.grid  = new_grid
         self._timer = new_timer
@@ -66,6 +65,7 @@ class SmokeLayer(BaseLayer):
         self.grid      = [[0.0]*w for _ in range(h)]
         self.diff_rate = diff_rate
         self.emit_rate = emit_rate
+        self.neighborhood = ((-1,-1), (-1,0), (-1,1), (0,-1), (0, 1), (1,-1), (1,0), (1,1))
 
     def update(self, env: 'Environment'):
         fire   = env.get_layer('fire')
@@ -80,7 +80,7 @@ class SmokeLayer(BaseLayer):
                 if fire and fire.grid[y][x] == FireLayer.BURNING:
                     new[y][x] = min(1.0, new[y][x] + self.emit_rate)
                 delta = 0.0
-                for dy,dx in [(-1,0),(1,0),(0,-1),(0,1)]:
+                for dy,dx in self.neighborhood:
                     ny, nx = y+dy, x+dx
                     if (0 <= nx < self.width and 0 <= ny < self.height and
                         not (struct and struct.grid[ny][nx] == struct.WALL)):

@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # struct.add_door(20,29)
     # env.add_layer('structure', struct)
 
-    fire = FireLayer(width,height, p_ignite=0.5, burn_time=5, spread_interval=2)
+    fire = FireLayer(width,height, p_ignite=0.5, burn_time=10, spread_interval=2)
     env.add_layer('fire', fire)
     fire.ignite(5,5)
 

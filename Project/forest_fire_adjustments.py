@@ -65,9 +65,9 @@ def iterate(X, i):
 
 
 # load in the map
-image_path = 'testmap.png'
-image_path = 'maps/one-exit.png'
-X = loadFromImage(image_path, (50, 50))
+#image_path = 'testmap.png'
+image_path = 'maps/baseline.png'
+X = loadFromImage(image_path, (5, 5))
 ny, nx = X.shape
 
 

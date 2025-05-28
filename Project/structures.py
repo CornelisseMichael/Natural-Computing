@@ -130,7 +130,7 @@ class Environment:
             ax.imshow(
                 np.array(smoke.grid),
                 cmap='Blues',
-                alpha=0.4,
+                alpha=0.2,
                 origin='lower',
                 zorder=2
             )
