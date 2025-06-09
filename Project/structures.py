@@ -212,6 +212,24 @@ class Environment:
         ax.set_title(f"Alive: {alive_count}, Dead: {dead_count}, Exited: {exited_count}")
         ax.set_xticks([]); ax.set_yticks([])
 
+        #7) aids
+        light = self.get_layer('light')
+        if light:
+            for (x, y), status in light.status.items():
+                color = 'cyan' if status == 'safe' else 'red'
+                ax.scatter(x, y, c=color, marker='s', s=100, edgecolors='black', linewidths=0.5, zorder=4.5)
+
+        speaker_layer = self.get_layer('speakers')
+        if speaker_layer:
+            for (x, y) in speaker_layer.speaker_coords:
+                # Visual circle only if radius > 0 and speakers are activated
+                if speaker_layer.activated and speaker_layer.radius > 0:
+                    circle = plt.Circle((x, y), speaker_layer.radius, color='blue', alpha=0.2, zorder=1)
+                    ax.add_patch(circle)
+
+                edge_color = 'lime' if speaker_layer.activated else 'white'
+                ax.scatter(x, y, c='black', s=60, marker='^', edgecolors=edge_color, linewidths=1.5, zorder=3)
+
     def display(self):
         fig, ax = plt.subplots(figsize=(6,6))
         fig.subplots_adjust(right=0.75)

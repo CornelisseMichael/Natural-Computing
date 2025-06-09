@@ -3,7 +3,8 @@ from IPython.display import display, HTML, Image
 from structures import Environment
 from structures import StructureLayer
 from fireSimulation import FireLayer, SmokeLayer
-import matplotlib; matplotlib.use("TkAgg") #to run the animations in PyCharm
+from aids import LightStripLayer, SpeakerLayer
+import matplotlib ; matplotlib.use("TkAgg") #to run the animations in PyCharm
 import matplotlib.pyplot as plt
 from mapLoading import *
 import numpy as np
@@ -41,6 +42,15 @@ if __name__ == "__main__":
     smoke = SmokeLayer(width,height, diff_rate=0.1, emit_rate=0.4)
     env.add_layer('smoke', smoke)
 
+    # exits = env.get_exits()
+    # print(exits)
+    # light = LightStripLayer(width, height, exits)
+    # env.add_layer('light', light)
+    #
+    # speaker_positions = [(5, 5), (25, 5), (5, 25), (25, 25)]
+    # speakers = SpeakerLayer(width, height, speaker_coords=speaker_positions, radius=8)
+    # env.add_layer('speakers', speakers)
+
     env.spawn_agents_randomly(75)
     env.save_initial_state()
 
@@ -54,6 +64,7 @@ if __name__ == "__main__":
     plt.show() # to show the animation in your IDE (pycharm)
 
 
-    #display(anim)
+    display(anim)
     #display(HTML(anim.to_jshtml()))
+    #anim.save('evac-1.gif', writer='pillow', fps=5)
 
