@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
 from PIL import Image
-#import mapLoading
 
 # Create a forest fire animation based on a simple cellular automaton model.
 # The maths behind this code is described in the scipython blog article
@@ -19,6 +18,7 @@ from PIL import Image
 # Displacements from a cell to its eight nearest neighbours
 neighbourhood = ((-1,-1), (-1,0), (-1,1), (0,-1), (0, 1), (1,-1), (1,0), (1,1))
 EMPTY, TREE, FIRE, WALL, EXIT = 0, 1, 2, 3, 4
+
 # Colours for visualization: brown for EMPTY, dark green for TREE and orange
 # for FIRE. Note that for the colormap to work, this list and the bounds list
 # must be one larger than the number of different values in the array.
@@ -65,7 +65,6 @@ def iterate(X, i):
 
 
 # load in the map
-#image_path = 'testmap.png'
 image_path = 'maps/baseline.png'
 X = loadFromImage(image_path, (5, 5))
 ny, nx = X.shape
@@ -75,8 +74,7 @@ ny, nx = X.shape
 fig = plt.figure(figsize=(25/3, 6.25))
 ax = fig.add_subplot(111)
 ax.set_axis_off()
-im = ax.imshow(X, cmap=cmap, norm=norm)#, interpolation='nearest')
-#plt.show()
+im = ax.imshow(X, cmap=cmap, norm=norm)
 
 # The animation function: called to produce a frame for each generation.
 def animate(i):
@@ -90,7 +88,3 @@ interval = 100
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=200)
 plt.show()
 
-#anim.save("forest_fire.mp4")
-# html_out = anim.to_jshtml()
-# with open('anim.html', "w") as tf:
-#     tf.write(html_out)
