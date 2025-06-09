@@ -23,6 +23,7 @@ class FireLayer(BaseLayer):
         new_grid  = [row.copy() for row in self.grid]
         new_timer = [row.copy() for row in self._timer]
         self._step_count += 1
+        speaker_layer = env.get_layer('speakers')
 
         for y in range(self.height):
             for x in range(self.width):
@@ -39,6 +40,8 @@ class FireLayer(BaseLayer):
                     else:
                         new_timer[y][x] = 0
                         new_grid[y][x]  = self.BURNED
+                    if (x, y) in speaker_layer.speaker_coords:
+                        speaker_layer.trigger_speakers()
 
                 elif state == self.UNBURNED and \
                      (self._step_count % self.spread_interval) == 0:

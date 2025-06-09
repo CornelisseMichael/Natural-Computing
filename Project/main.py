@@ -42,14 +42,14 @@ if __name__ == "__main__":
     smoke = SmokeLayer(width,height, diff_rate=0.1, emit_rate=0.4)
     env.add_layer('smoke', smoke)
 
-    # exits = env.get_exits()
-    # print(exits)
-    # light = LightStripLayer(width, height, exits)
-    # env.add_layer('light', light)
-    #
-    # speaker_positions = [(5, 5), (25, 5), (5, 25), (25, 25)]
-    # speakers = SpeakerLayer(width, height, speaker_coords=speaker_positions, radius=8)
-    # env.add_layer('speakers', speakers)
+    exits = env.get_exits()
+    print(exits)
+    light = LightStripLayer(width, height, exits)
+    env.add_layer('light', light)
+
+    speaker_positions = [(25, 5), (5, 25), (25, 25)]
+    speakers = SpeakerLayer(width, height, speaker_coords=None, radius=8)
+    env.add_layer('speakers', speakers)
 
     env.spawn_agents_randomly(75)
     env.save_initial_state()

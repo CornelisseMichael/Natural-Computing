@@ -49,9 +49,42 @@ class EvacueeAgent:
         if not self.alive or self.reached:
             return
 
+        exits = env.get_exits()
+        if not exits:
+            return
+
         struct = env.get_layer('structure')
         fire   = env.get_layer('fire')
         smoke  = env.get_layer('smoke')
+        light = env.get_layer('light')
+        speaker_layer = env.get_layer('speakers')
+
+        # Checks for safe exits
+        light_status = {}  # maps exit coords to 'safe'/'unsafe'
+        if light:
+            for ex, ey in exits:
+                light_status[(ex, ey)] = light.get_status(ex, ey)
+
+        # Filter exits based on light strip + distance + reroute chance
+        filtered_exits = []
+        for ex, ey in exits:
+            dist = abs(self.x - ex) + abs(self.y - ey)
+            status = light_status.get((ex, ey), 'safe')
+            if status == 'safe':
+                filtered_exits.append((ex, ey))
+            else:
+                if dist <= 3:  # Too close to change mind
+                    filtered_exits.append((ex, ey))
+                else:
+                    # Use reroute chance
+                    if random.random() < 0.7:
+                        continue  # Skip this exit
+                    else:
+                        filtered_exits.append((ex, ey))
+
+        # Fallback: if all were filtered out, use all exits
+        if not filtered_exits:
+            filtered_exits = exits
 
 
     ## STATUS UPDATES; health and panic ##
@@ -69,31 +102,22 @@ class EvacueeAgent:
             return
 
         # detect panic in radius
-
-        # r = self.panic_radius
-        # for dy in range(-r, r+1):
-        #     for dx in range(-r, r+1):
-        #         ny, nx = self.y+dy, self.x+dx
-        #         if 0 <= nx < env.width and 0 <= ny < env.height:
-        #             if ((fire and fire.grid[ny][nx] == FireLayer.BURNING) or
-        #                 (smoke and smoke.grid[ny][nx] >= self.panic_smoke_threshold)):
-        #                 self.panicked = True
-        #                 break
-        #     if self.panicked:
-        #         break
-
         r = self.panic_radius
         for dy in range(-r, r + 1):
             for dx in range(-r, r + 1):
                 ny, nx = self.y + dy, self.x + dx
                 if 0 <= nx < env.width and 0 <= ny < env.height:
                     if not line_of_sight(self.x, self.y, nx, ny, struct.grid):
-                        continue  # Can't see it
+                        continue  # Can't see the fire
 
                     if ((fire and fire.grid[ny][nx] == FireLayer.BURNING) or
                             (smoke and smoke.grid[ny][nx] >= self.panic_smoke_threshold)):
                         self.panicked = True
+                        # if not speaker_layer.activated:
+                        #     speaker_layer.trigger_speakers()
                         break
+                    if speaker_layer.activated and speaker_layer.is_agent_in_range(self):
+                        self.panicked = True
             if self.panicked:
                 break
 

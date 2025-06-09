@@ -49,9 +49,20 @@ class LightStripLayer(BaseLayer):
 class SpeakerLayer(BaseLayer):
     def __init__(self, width, height, speaker_coords, radius=6):
         super().__init__(width, height)
-        self.speaker_coords = speaker_coords  # x, y coords of the speaker locations, meaning we can hardcode them in
         self.radius = radius  # How large the radius is where the speakers can reach
+        self.speaker_coords = self.set_speakers(speaker_coords)  # x, y coords of the speaker locations, meaning we can hardcode them in
         self.activated = False  # which speakers have been triggered
+        print(self.speaker_coords)
+
+    def set_speakers(self, coords):
+        if coords is None:
+            grid_coords = []
+            for x in range(self.radius, self.width-self.radius, 2*self.radius+2):
+                for y in range(self.radius, self.height-self.radius, 2*self.radius+2):
+                    grid_coords.append((x, y))
+            return grid_coords
+        else:
+            return coords
 
     def trigger_speakers(self):
         # After an evacuee/ agent detects the first they "pull the alarm" and trigger all speakers --> possibly an issue, when all speakers turn on, that it still causes panic, eventhough the visual radius is not there (maybe a theoretical hidden radius)

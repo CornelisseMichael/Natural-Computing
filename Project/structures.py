@@ -224,7 +224,7 @@ class Environment:
             for (x, y) in speaker_layer.speaker_coords:
                 # Visual circle only if radius > 0 and speakers are activated
                 if speaker_layer.activated and speaker_layer.radius > 0:
-                    circle = plt.Circle((x, y), speaker_layer.radius, color='blue', alpha=0.2, zorder=1)
+                    circle = plt.Circle((x, y), speaker_layer.radius, color='blue', alpha=0.2, zorder=6)
                     ax.add_patch(circle)
 
                 edge_color = 'lime' if speaker_layer.activated else 'white'
