@@ -31,6 +31,6 @@ def loadFromfile(path, source=None):
         grid[source[0]][source[1]] = 2
     return grid
 
-array = loadFromImage('./maps/threedoorss+wall.png')
-np.save('numpytest', array)
+# array = loadFromImage('./maps/threedoorss+wall.png')
+# np.save('numpytest', array)
 

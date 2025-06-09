@@ -55,10 +55,11 @@ class SpeakerLayer(BaseLayer):
         print(self.speaker_coords)
 
     def set_speakers(self, coords):
+        padding = 2 
         if coords is None:
             grid_coords = []
-            for x in range(self.radius, self.width-self.radius, 2*self.radius+2):
-                for y in range(self.radius, self.height-self.radius, 2*self.radius+2):
+            for x in range(self.radius, self.width-self.radius, 2*self.radius+padding):
+                for y in range(self.radius, self.height-self.radius, 2*self.radius+padding):
                     grid_coords.append((x, y))
             return grid_coords
         else:

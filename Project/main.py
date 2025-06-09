@@ -14,7 +14,7 @@ import numpy as np
 if __name__ == "__main__":
     # build & seed
 
-    filepath = './maps/offices_1.png'
+    filepath = './maps/baseline_1.png'
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     env.add_layer('light', light)
 
     speaker_positions = [(25, 5), (5, 25), (25, 25)]
-    speakers = SpeakerLayer(width, height, speaker_coords=None, radius=8)
+    speakers = SpeakerLayer(width, height, speaker_coords=None, radius=6)
     env.add_layer('speakers', speakers)
 
     env.spawn_agents_randomly(75)
