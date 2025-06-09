@@ -15,10 +15,12 @@ class EvacueeAgent:
                  smoke_damage_rate=10.0, slow_threshold=0.5,
                  fire_damage_rate=20.0,
                  panic_radius=5, panic_smoke_threshold=0.1, panic_speed=1):
+        
         self.x, self.y = x, y
         self.smoke_w, self.fire_w = smoke_w, fire_w
         self.smoke_damage_rate, self.slow_threshold = (
             smoke_damage_rate, slow_threshold)
+        
         self.fire_damage_rate = fire_damage_rate
         self.panic_radius = panic_radius
         self.panicked = False
@@ -57,8 +59,9 @@ class EvacueeAgent:
         fire   = env.get_layer('fire')
         smoke  = env.get_layer('smoke')
         light = env.get_layer('light')
-        speaker_layer = env.get_layer('speakers')
+        firealarm_layer = env.get_layer('firealarm')
 
+        ## --- LIGHT STRIP EVAC AIDS LOGIC --- ##
         # Checks for safe exits
         light_status = {}  # maps exit coords to 'safe'/'unsafe'
         if light:
@@ -82,12 +85,12 @@ class EvacueeAgent:
                     else:
                         filtered_exits.append((ex, ey))
 
-        # Fallback: if all were filtered out, use all exits
+        # Fallback: if all were filtered out, use all exits.
         if not filtered_exits:
             filtered_exits = exits
 
 
-    ## STATUS UPDATES; health and panic ##
+        ## --- STATUS UPDATES; health and panic --- ##
         # smoke damage
         conc = smoke.grid[self.y][self.x] if smoke else 0.0
         self.health -= conc * self.smoke_damage_rate
@@ -116,12 +119,12 @@ class EvacueeAgent:
                         # if not speaker_layer.activated:
                         #     speaker_layer.trigger_speakers()
                         break
-                    if speaker_layer.activated and speaker_layer.is_agent_in_range(self):
+                    if firealarm_layer.activated and firealarm_layer.is_agent_in_range(self):
                         self.panicked = True
             if self.panicked:
                 break
 
-    ## MOVEMENT UPDATES PREP ##
+        ## --- MOVEMENT UPDATES PREP --- ##
         # compute number of moves with health‐based panic boost
         if self.panicked:
             h = self.health
@@ -164,7 +167,7 @@ class EvacueeAgent:
         def heuristic(cx, cy):
             return min(abs(cx-ex) + abs(cy-ey) for ex,ey in exits)
 
-    ## ACTUALLY MOVE ##
+        ## ---ACTUALLY MOVE --- ##
         # perform up to `moves` steps, but probabilistically impaired by smoke
         for step_i in range(moves):
             conc = smoke.grid[self.y][self.x] if smoke else 0.0

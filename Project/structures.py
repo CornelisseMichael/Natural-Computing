@@ -52,6 +52,7 @@ class Environment:
         self._layers_snapshot = None
         self._agents_snapshot = None
         self._rng_snapshot = None
+        self.time = 0
 
     def set_seed(self, seed: int):
         random.seed(seed)
@@ -110,6 +111,7 @@ class Environment:
     def step(self):
         self.update_layers()
         self.update_agents()
+        self.time += 1
 
     def _draw(self, ax):
         # 1) Fire (bottom)
@@ -178,12 +180,6 @@ class Environment:
             ax.scatter(xs, ys, c='red', s=20, marker='X', zorder=5)
 
         # 5) Legend with current counts
-        #count_healthy  = len(healthy)
-        #count_mild     = len(mild)
-        #count_critical = len(critical)
-        #count_dead     = len(dead)
-
-
         count_healthy = sum(1 for a in self.agents if a.alive and a.health>66)
         count_mild = sum(1 for a in self.agents if a.alive and 33<a.health<=66)
         count_critical = sum(1 for a in self.agents if a.alive and 0<a.health<=33)
@@ -219,15 +215,15 @@ class Environment:
                 color = 'cyan' if status == 'safe' else 'red'
                 ax.scatter(x, y, c=color, marker='s', s=100, edgecolors='black', linewidths=0.5, zorder=4.5)
 
-        speaker_layer = self.get_layer('speakers')
-        if speaker_layer:
-            for (x, y) in speaker_layer.speaker_coords:
+        firealarm_layer = self.get_layer('firealarm')
+        if firealarm_layer:
+            for (x, y) in firealarm_layer.firealarm_coords:
                 # Visual circle only if radius > 0 and speakers are activated
-                if speaker_layer.activated and speaker_layer.radius > 0:
-                    circle = plt.Circle((x, y), speaker_layer.radius, color='blue', alpha=0.2, zorder=6)
+                if firealarm_layer.activated and firealarm_layer.radius > 0:
+                    circle = plt.Circle((x, y), firealarm_layer.radius, color='blue', alpha=0.2, zorder=6)
                     ax.add_patch(circle)
 
-                edge_color = 'lime' if speaker_layer.activated else 'white'
+                edge_color = 'lime' if firealarm_layer.activated else 'white'
                 ax.scatter(x, y, c='black', s=60, marker='^', edgecolors=edge_color, linewidths=1.5, zorder=3)
 
     def display(self):
@@ -252,7 +248,7 @@ class Environment:
         random.setstate(self._rng_snapshot)
         return self
 
-    def animate(self, steps: int, interval: int=500) -> HTML:
+    def animate(self, steps: int, interval: int=500, evaluator = None) -> HTML:
         self.reset()
         fig, ax = plt.subplots(figsize=(8,6))
         fig.subplots_adjust(right=0.75)
@@ -266,6 +262,8 @@ class Environment:
         def update(i):
             ax.clear()
             self.step()
+            if evaluator:
+                evaluator.update() # Calling evaluator from evaluation metrics
             self._draw(ax)
             ax.set_title(f"Step {i}")
             return []
@@ -277,5 +275,4 @@ class Environment:
             interval=interval,
             blit=True
         )
-        #return HTML(ani.to_jshtml())
         return ani

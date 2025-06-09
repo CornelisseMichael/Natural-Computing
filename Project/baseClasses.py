@@ -3,10 +3,6 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 
-#from agentEvacuee import EvacueeAgent
-
-
-
 class BaseLayer(ABC):
     """Abstract base class for all CA layers."""
     def __init__(self, width: int, height: int):

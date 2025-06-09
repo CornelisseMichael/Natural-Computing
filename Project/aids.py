@@ -3,7 +3,7 @@ from baseClasses import BaseLayer
 class LightStripLayer(BaseLayer):
     """
     Light strips placed near doors (which signify exits) + turn red if fire is near, stay cyan otherwise
-    + Layer-based, so it stays in the same structure as the fire/smoke and main grid.
+    + Layer-based, so it stays in the same structure as the fire/smoke/firealarms and main grid.
     """
 
     def __init__(self, width, height, door_coords, check_radius=4):
@@ -18,10 +18,6 @@ class LightStripLayer(BaseLayer):
                     nx, ny = x + dx, y + dy
                     if 0 <= nx < self.width and 0 <= ny < self.height:
                         self.status[(nx, ny)] = 'safe'  # Default: all safe
-
-        # ------ CODE for only 1 light strip on exit location -------- #
-        # for (x, y) in door_coords:
-        #    self.status[(nx, ny)] = 'safe'  # Default: all safe
 
     def update(self, env):
         fire_layer = env.get_layer('fire')
@@ -46,15 +42,15 @@ class LightStripLayer(BaseLayer):
         return self.status.get((x, y), 'safe')
 
 
-class SpeakerLayer(BaseLayer):
-    def __init__(self, width, height, speaker_coords, radius=6):
+class FireAlarmLayer(BaseLayer):
+    def __init__(self, width, height, firealarm_coords, radius=6):
         super().__init__(width, height)
-        self.radius = radius  # How large the radius is where the speakers can reach
-        self.speaker_coords = self.set_speakers(speaker_coords)  # x, y coords of the speaker locations, meaning we can hardcode them in
-        self.activated = False  # which speakers have been triggered
-        print(self.speaker_coords)
+        self.radius = radius  # Radius of the hearing range
+        self.firealarm_coords = self.set_firealarm(firealarm_coords)  # x, y coords of the fire alarm locations.
+        self.activated = False  # which fire alarm have been triggered
+        print(self.firealarm_coords)
 
-    def set_speakers(self, coords):
+    def set_firealarm(self, coords):
         if coords is None:
             grid_coords = []
             for x in range(self.radius, self.width-self.radius, 2*self.radius+2):
@@ -64,20 +60,19 @@ class SpeakerLayer(BaseLayer):
         else:
             return coords
 
-    def trigger_speakers(self):
-        # After an evacuee/ agent detects the first they "pull the alarm" and trigger all speakers --> possibly an issue, when all speakers turn on, that it still causes panic, eventhough the visual radius is not there (maybe a theoretical hidden radius)
+    def trigger_firealarm(self):
+        # After an evacuee/ agent detects the first they "pull the alarm" and trigger all fire alarms
         self.activated = True  # All speakers ON
 
     def is_agent_in_range(self, agent):
-        # returns True if the agent is actually in hearing range of any nearby speaker --> Doesnt work as it should. Even when the radius is 0, speakers get activated and everyone still goes panic.
+        # returns True if the agent is actually in hearing range of any nearby fire alarm
         if not self.activated or self.radius <= 0:
             return False
-        for (sx, sy) in self.speaker_coords:
+        for (sx, sy) in self.firealarm_coords:
             dx, dy = agent.x - sx, agent.y - sy
             if dx * dx + dy * dy <= self.radius * self.radius:
                 return True
         return False
 
     def update(self, env):
-        # In google docs we talk about speaker turning on when least amount of people are nearby? can be implemented here.
         pass

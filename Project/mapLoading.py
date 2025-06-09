@@ -1,13 +1,16 @@
 import numpy as np
 from PIL import Image
-
+import os
 EMPTY, TREE, FIRE, WALL, EXIT = 0, 1, 2, 3, 4
 
 # create the grid from some image
 # if many values become empty the color profile might not be set correctly
 # for testing sRGB was used and the image was saved as PNG24
 def loadFromImage(path, source=None):
-    image = Image.open(path)
+    base_path = os.path.dirname(__file__)
+    full_path = os.path.join(base_path, path)
+
+    image = Image.open(full_path)
     if image.mode != 'RGB':
         image = image.convert('RGB')
     image_array = np.array(image)
