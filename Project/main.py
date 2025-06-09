@@ -14,7 +14,7 @@ from FireAlarm_config import get_firealarm_config
 if __name__ == "__main__":
     # build & seed
 
-    filepath = './maps/offices_1.png'
+    filepath = './maps/obstacles_2.png'
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
@@ -40,13 +40,13 @@ if __name__ == "__main__":
     # ==== config settings ==== #
     # Select from baseline, threedoors, obstacles, offices for the first string
     # Select from from floor placement type located in FireAlarm_config
-    config = get_firealarm_config('offices', 'rooms_exp4')
+    config = get_firealarm_config('obstacles', 'one_exp3')
 
     # Initializing FireAlarmLayer
     firealarm = FireAlarmLayer(width, height, firealarm_coords=config['coords'], radius=config['radius']) 
     env.add_layer('firealarm', firealarm)
 
-    env.spawn_agents_randomly(75)
+    env.spawn_agents_randomly(270)
     env.save_initial_state()
 
     # Evaluator
