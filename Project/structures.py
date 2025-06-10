@@ -1,6 +1,7 @@
 from baseClasses import BaseLayer
 from agentEvacuee import EvacueeAgent
 import random
+from typing import Optional, Sequence, Tuple
 import numpy as np
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from matplotlib.lines import Line2D
@@ -70,6 +71,31 @@ class Environment:
     def add_agent(self, agent: 'EvacueeAgent'):
         self.agents.append(agent)
         return self
+    
+    def compute_evacuee_count(self, density:str):
+        density_map = {
+            'small': 0.10,
+            'medium': 0.15,
+            'large': 0.20
+        }
+        try:
+            p = density_map[density]
+        except KeyError:
+            raise ValueError("density must be one of: 'small','medium','large'")
+        
+        base = self.width * self.height
+        
+        return max(1, int(base * p))
+    
+    def spawn_agents(self, count: int = None, density: str = None):
+        if density is not None:
+            count = self.compute_evacuee_count(density)
+            
+        if count is None:
+            raise ValueError("Must supply either count or density")
+        print(f"Evacuee count: {count}")
+        return self.spawn_agents_randomly(count)
+        
 
     def spawn_agents_randomly(self, n: int):
         struct = self.get_layer('structure')
@@ -87,6 +113,68 @@ class Environment:
         for x,y in random.sample(empties, n):
             self.add_agent(EvacueeAgent(x,y))
         return self
+    
+    def ignite_fire_randomly(self, n: int = 1):
+        fire = self.get_layer("fire")
+        struct = self.get_layer("structure")
+
+        if fire is None or struct is None:
+            raise RuntimeError("Must add both 'structure' and 'fire' layers first")
+        
+        # collect all floor cells (EMPTY == 0)
+        empties = [
+            (x, y)
+            for y in range(self.height)
+            for x in range(self.width)
+            if struct.grid[y][x] == struct.EMPTY
+        ]
+
+        if n > len(empties):
+            raise ValueError(f"Only {len(empties)} free cells to ignite")
+        
+        # sample without replacement and ignite
+        for x, y in random.sample(empties, k=n):
+            fire.ignite(x, y)
+
+        return self
+    
+    def ignite_fire(
+        self,
+        coords: Optional[Sequence[Tuple[int,int]]] = None,
+        n: int = 1,
+        layer_name: str = 'fire'
+    ):
+        """
+        Ignite fire in the specified layer either at given coords,
+        or randomly at `n` empty-floor cells if coords is None.
+        """
+        fire   = self.get_layer(layer_name)
+        struct = self.get_layer('structure')
+        if fire is None or struct is None:
+            raise RuntimeError("Must add both 'structure' and 'fire' layers first")
+
+        # If explicit coords provided, just use those:
+        if coords is not None:
+            for x, y in coords:
+                if struct.grid[y][x] != struct.EMPTY:
+                    raise ValueError(f"Cannot ignite at ({x},{y})—not empty.")
+                fire.ignite(x, y)
+            return self
+
+        # Otherwise do random sampling of empties, as before:
+        empties = [
+            (x, y)
+            for y in range(self.height)
+            for x in range(self.width)
+            if struct.grid[y][x] == struct.EMPTY
+        ]
+        if n > len(empties):
+            raise ValueError(f"Only {len(empties)} free cells to ignite")
+        for x, y in random.sample(empties, k=n):
+            fire.ignite(x, y)
+
+        return self
+
 
     def get_exits(self):
         struct = self.get_layer('structure')
