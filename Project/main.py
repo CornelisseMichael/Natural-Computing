@@ -53,7 +53,7 @@ if __name__ == "__main__":
     evaluator = Evaluation(env)
 
     # animation
-    anim = env.animate(steps=100, interval=100, evaluator= evaluator)
+    anim = env.animate(steps=1000, interval=100, evaluator= evaluator)
     plt.show() # to show the animation in your IDE (pycharm)
 
 

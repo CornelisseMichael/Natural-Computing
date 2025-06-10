@@ -264,6 +264,8 @@ class Environment:
             self.step()
             if evaluator:
                 evaluator.update() # Calling evaluator from evaluation metrics
+                if evaluator.complete: # Stop the animation once the last evacuee has left the structure/ has died.
+                        ani.event_source.stop()
             self._draw(ax)
             ax.set_title(f"Step {i}")
             return []
