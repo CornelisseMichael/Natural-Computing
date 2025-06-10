@@ -50,7 +50,7 @@ if __name__ == "__main__":
     env.add_layer('firealarm', firealarm)
 
     #env.spawn_agents_randomly(270)
-    env.spawn_agents(density='large')
+    env.spawn_agents(density='small')
     env.save_initial_state()
 
     # Evaluator
@@ -58,7 +58,9 @@ if __name__ == "__main__":
 
     # animation
     anim = env.animate(steps=1000, interval=100, evaluator= evaluator)
-    plt.show() # to show the animation in your IDE (pycharm)
+    plt.show()
+    if ((sum(1 for a in env.agents if not a.alive))+(sum(1 for a in env.agents if a.reached))) == len(env.agents):
+        plt.close() # to show the animation in your IDE (pycharm)
 
 
     display(anim)

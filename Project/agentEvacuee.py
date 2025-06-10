@@ -119,8 +119,9 @@ class EvacueeAgent:
                         # if not speaker_layer.activated:
                         #     speaker_layer.trigger_speakers()
                         break
-                    if firealarm_layer.activated and firealarm_layer.is_agent_in_range(self):
-                        self.panicked = True
+                    if env.get_layer('firealarm'):
+                        if firealarm_layer.activated and firealarm_layer.is_agent_in_range(self):
+                            self.panicked = True
             if self.panicked:
                 break
 

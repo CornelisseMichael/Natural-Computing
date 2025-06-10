@@ -9,6 +9,7 @@ class Evaluation:
         self.evac_complete_time = None
         self.evac_death_rate = None
 
+
     def update(self):
         """Call this once per step to check if evaluation is complete."""
         if self.complete:
@@ -18,7 +19,7 @@ class Evaluation:
         dead_agents = sum(1 for a in self.env.agents if not a.alive)
         escaped_agents = sum(1 for a in self.env.agents if a.reached)
 
-        if (dead_agents + escaped_agents) == total_agents:
+        if (self.dead_agents + self.escaped_agents) == self.total_agents:
             self.complete = True
             self.evac_complete_time = self.env.time
             self.evac_death_rate = (dead_agents / total_agents) * 100

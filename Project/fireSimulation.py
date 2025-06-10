@@ -1,4 +1,4 @@
-#from baseClasses import Environment
+
 from baseClasses import BaseLayer
 import random
 
@@ -40,8 +40,9 @@ class FireLayer(BaseLayer):
                     else:
                         new_timer[y][x] = 0
                         new_grid[y][x]  = self.BURNED
-                    if (x, y) in firealarm_layer.firealarm_coords:
-                        firealarm_layer.trigger_firealarm()
+                    if env.get_layer('firealarm'):
+                        if (x, y) in firealarm_layer.firealarm_coords:
+                            firealarm_layer.trigger_firealarm()
 
                 elif state == self.UNBURNED and \
                      (self._step_count % self.spread_interval) == 0:
