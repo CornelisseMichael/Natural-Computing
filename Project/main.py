@@ -4,7 +4,7 @@ from structures import Environment
 from structures import StructureLayer
 from fireSimulation import FireLayer, SmokeLayer
 from aids import LightStripLayer, FireAlarmLayer
-import matplotlib ; matplotlib.use("TkAgg") #to run the animations in PyCharm
+import matplotlib; matplotlib.use("TkAgg") #to run the animations in PyCharm
 import matplotlib.pyplot as plt
 from mapLoading import *
 import numpy as np
@@ -29,13 +29,12 @@ if __name__ == "__main__":
     env.add_layer('fire', fire)
     #fire.ignite(5,5)
     #env.ignite_fire([(5, 5), (10, 10)])
-    env.ignite_fire_randomly(n=10)
+    env.ignite_fire_randomly(n=1)
 
     smoke = SmokeLayer(width,height, diff_rate=0.1, emit_rate=0.4)
     env.add_layer('smoke', smoke)
 
     exits = env.get_exits()
-    print(exits)
     light = LightStripLayer(width, height, exits)
     env.add_layer('light', light)
 
@@ -57,16 +56,18 @@ if __name__ == "__main__":
     evaluator = Evaluation(env)
 
     # animation
-    anim = env.animate(steps=1000, interval=100, evaluator= evaluator)
+    anim = env.animate(steps=100, interval=100, evaluator=evaluator)
     plt.show()
-    if ((sum(1 for a in env.agents if not a.alive))+(sum(1 for a in env.agents if a.reached))) == len(env.agents):
-        plt.close() # to show the animation in your IDE (pycharm)
+    # if env.time > 100:
+    # # if ((sum(1 for a in env.agents if not a.alive))+(sum(1 for a in env.agents if a.reached))) == len(env.agents):
+    #     plt.pause(3)
+    plt.close() # to show the animation in your IDE (pycharm)
 
 
     display(anim)
     #display(HTML(anim.to_jshtml()))
     #anim.save('evac-1.gif', writer='pillow', fps=5)
 
-    print(evaluator.report()) 
+    print(evaluator.survival_rate)
 
 

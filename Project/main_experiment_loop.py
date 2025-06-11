@@ -13,6 +13,14 @@ from FireAlarm_config import get_firealarm_config
 import random
 import pandas as pd
 
+def pad_lists(lists):
+    max_length = max(len(sublist) for sublist in lists)
+    padded_lists = [
+        sublist + [sublist[-1]] * (max_length - len(sublist))
+        for sublist in lists
+    ]
+    return padded_lists
+
 
 if __name__ == "__main__":
     # build & seed
@@ -29,15 +37,18 @@ if __name__ == "__main__":
     seeds = [random.randint(0, 10000) for _ in range(seed_range)]
     print(seeds)
     
-    evacuee_densities = ["small", "medium", "large"]
+    # evacuee_densities = ["small", "medium", "large"]
+    evacuee_densities = ["small"]
 
-    scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
+    scenarios = ["no aids"] #, "lightstrips", "firealarms", "combined"]
     
     all_experiment_results = []
-    
-    for seed in seeds:
+
+    for scene in scenarios:
         for density in evacuee_densities:
-            for scene in scenarios:
+            survival_rates = []
+            completion_times = []
+            for seed in seeds:
                 print(f"\n--- Starting Run: Seed={seed}, Density={density}, Scenario={scene} ---")
 
                 env = Environment(width, height).set_seed(seed)
@@ -79,21 +90,34 @@ if __name__ == "__main__":
                 plt.show() # to show the animation in your IDE (pycharm)
                 display(anim)
 
+                survival_rates.append(evaluator.survival_rate)
+                completion_times.append(evaluator.evac_complete_time)
+
                 #print(evaluator.report())  
 
-                run_results = {
-                    "seed": seed,
-                    "evacuee_density": density,
-                    "scenario": scene,
-                    "completion_time": evaluator.evac_complete_time, # None if not completed
-                    "death_rate_percent": evaluator.evac_death_rate, # None if not completed
-                }
+                # run_results = {
+                #     "seed": seed,
+                #     "evacuee_density": density,
+                #     "scenario": scene,
+                #     "completion_time": evaluator.evac_complete_time, # None if not completed
+                #     #"death_rate_percent": evaluator.evac_death_rate, # None if not completed
+                #     "death_rate": evaluator.death_rate,
+                # }
                 
-                all_experiment_results.append(run_results)
+                # all_experiment_results.append(run_results)
                 
                 # Print the report for the current run
-                print(evaluator.report()) 
+                # print(evaluator.report())
                 print(f"Finished Run: Seed={seed}, Density={density}, Scenario={scene}")
+
+            survival_rates = pad_lists(survival_rates)
+            run_results = {
+                "scenario": scene,
+                "evacuee_density": density,
+                "completion_time": np.mean(completion_times),  # None if not completed
+                "average_survival_rate": np.mean(survival_rates, axis=0),
+            }
+            all_experiment_results.append(run_results)
 
     # --- Saving All Results to CSV ---
     if all_experiment_results: # Check if there are results to save

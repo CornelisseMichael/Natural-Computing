@@ -273,6 +273,7 @@ class Environment:
         count_critical = sum(1 for a in self.agents if a.alive and 0<a.health<=33)
         count_dead = sum(1 for a in self.agents if not a.alive)
 
+
         legend_handles = [
             Line2D([0],[0], marker='o', color='w',
                    label=f'Healthy: {count_healthy}',
@@ -293,7 +294,7 @@ class Environment:
         alive_count  = sum(1 for a in self.agents if a.alive)
         dead_count   = count_dead
         exited_count = sum(1 for a in self.agents if a.reached)
-        ax.set_title(f"Alive: {alive_count}, Dead: {dead_count}, Exited: {exited_count}")
+        # ax.set_title(f"Alive: {alive_count}, Dead: {dead_count}, Exited: {exited_count}")
         ax.set_xticks([]); ax.set_yticks([])
 
         #7) aids
@@ -353,7 +354,7 @@ class Environment:
             if evaluator:
                 evaluator.update() # Calling evaluator from evaluation metrics
                 if evaluator.complete: # Stop the animation once the last evacuee has left the structure/ has died.
-                        ani.event_source.stop()
+                    ani.event_source.stop()
             self._draw(ax)
             ax.set_title(f"Step {i}")
             return []

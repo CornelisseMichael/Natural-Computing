@@ -6,8 +6,9 @@ class Evaluation:
     def __init__(self, env):
         self.env = env
         self.complete = False
-        self.evac_complete_time = None
+        self.evac_complete_time = 0
         self.evac_death_rate = None
+        self.survival_rate = []
 
 
     def update(self):
@@ -16,13 +17,15 @@ class Evaluation:
             return
 
         total_agents = len(self.env.agents)
-        dead_agents = sum(1 for a in self.env.agents if not a.alive)
         escaped_agents = sum(1 for a in self.env.agents if a.reached)
+        dead_agents = sum(1 for a in self.env.agents if not a.alive)
 
-        if (self.dead_agents + self.escaped_agents) == self.total_agents:
+        self.survival_rate.append(total_agents - dead_agents)
+
+        if (dead_agents + escaped_agents) == total_agents:
             self.complete = True
             self.evac_complete_time = self.env.time
-            self.evac_death_rate = (dead_agents / total_agents) * 100
+
 
     def report(self):
         if self.evac_complete_time is not None:
