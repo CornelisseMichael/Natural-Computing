@@ -29,16 +29,16 @@ if __name__ == "__main__":
     height, width = floormap.shape
     
     # Generate seeds randomly or define them manually
-    seed_range = 1
+    seed_range = 2
     random.seed(42)
     seeds = [random.randint(0, 10000) for _ in range(seed_range)]
     print(seeds)
     
-    #evacuee_densities = ["small", "medium", "large"]
+    evacuee_densities = ["small", "medium", "large"]
     
-    evacuee_densities = ["small"]
+    #evacuee_densities = ["small"]
 
-    #scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
+    scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
     
     scenarios = ["no aids"]
     
@@ -86,11 +86,15 @@ if __name__ == "__main__":
                 evaluator = Evaluation(env)
 
                 # animation
-                anim = env.animate(steps=1000, interval=100, evaluator= evaluator)
-                #anim.save(f'{filename}_{density}_{scene}', writer='pillow', fps=5)
+                anim = env.animate(steps=1000, interval=100, evaluator=evaluator)
+                # Construct the full path for the animation file
+                animation_filename = f'{seed}_{basename}_{density}_{scene}.gif'
+                full_animation_path = os.path.join(animation_directory_name, animation_filename)
+                anim.save(full_animation_path, writer='pillow', fps=5)
+                plt.close(anim._fig)
 
-                plt.show() # to show the animation in your IDE (pycharm)
-                display(anim)
+                #plt.show() # to show the animation in your IDE (pycharm)
+                #display(anim)
                 
                 
 
