@@ -12,28 +12,40 @@ from EvaluationMetrics import Evaluation
 from FireAlarm_config import get_firealarm_config
 import random
 import pandas as pd
+import os
 
 
 if __name__ == "__main__":
     # build & seed
     filepath = './maps/obstacles_2.png'
+    # Get the filename with extension
+    filename = os.path.basename(filepath)
+
+    # Split the filename into base name and extension
+    basename, extension = os.path.splitext(filename)
     config = get_firealarm_config('obstacles', 'one_exp3')
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
     
     # Generate seeds randomly or define them manually
-    # Generate 10 unsigned-32-bit seeds (0 through 2**32−1)
-    seed_range = 2
+    seed_range = 1
     random.seed(42)
     seeds = [random.randint(0, 10000) for _ in range(seed_range)]
     print(seeds)
     
-    evacuee_densities = ["small", "medium", "large"]
+    #evacuee_densities = ["small", "medium", "large"]
+    
+    evacuee_densities = ["small"]
 
-    scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
+    #scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
+    
+    scenarios = ["no aids"]
     
     all_experiment_results = []
+    
+    animation_directory_name = "simulation-gifs"
+    os.makedirs(animation_directory_name, exist_ok=True)
     
     for seed in seeds:
         for density in evacuee_densities:
@@ -75,9 +87,12 @@ if __name__ == "__main__":
 
                 # animation
                 anim = env.animate(steps=1000, interval=100, evaluator= evaluator)
+                #anim.save(f'{filename}_{density}_{scene}', writer='pillow', fps=5)
 
                 plt.show() # to show the animation in your IDE (pycharm)
                 display(anim)
+                
+                
 
                 #print(evaluator.report())  
 
