@@ -353,7 +353,11 @@ class Environment:
             if evaluator:
                 evaluator.update() # Calling evaluator from evaluation metrics
                 if evaluator.complete: # Stop the animation once the last evacuee has left the structure/ has died.
+                    # only stop & close if we're in a live GUI session
+                    if getattr(ani, "event_source", None) is not None:
                         ani.event_source.stop()
+                        plt.close(fig)
+                    return []
             self._draw(ax)
             ax.set_title(f"Step {i}")
             return []
@@ -374,4 +378,6 @@ class Environment:
             blit=True,
             save_count=steps 
         )
+        
+        plt.show() 
         return ani

@@ -40,10 +40,9 @@ if __name__ == "__main__":
 
     scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
     
-    scenarios = ["no aids"]
+    #scenarios = ["no aids"]
     
     all_experiment_results = []
-    
     animation_directory_name = "simulation-gifs"
     os.makedirs(animation_directory_name, exist_ok=True)
     
@@ -91,12 +90,10 @@ if __name__ == "__main__":
                 animation_filename = f'{seed}_{basename}_{density}_{scene}.gif'
                 full_animation_path = os.path.join(animation_directory_name, animation_filename)
                 anim.save(full_animation_path, writer='pillow', fps=5)
-                plt.close(anim._fig)
+                #plt.close(anim._fig)
 
                 #plt.show() # to show the animation in your IDE (pycharm)
                 #display(anim)
-                
-                
 
                 #print(evaluator.report())  
 
