@@ -45,7 +45,7 @@ if __name__ == "__main__":
     # evacuee_densities = ["small", "medium", "large"]
     evacuee_densities = ["small"]
 
-    scenarios = ["no aids"] #, "lightstrips", "firealarms", "combined"]
+    scenarios = ["no aids", "lightstrips"]#, "firealarms", "combined"]
     
     all_experiment_results = []
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
                 evaluator = Evaluation(env)
 
                 # animation
-                anim = env.animate(steps=1000, interval=100, evaluator=evaluator)
+                anim = env.animate(steps=150, interval=100, evaluator=evaluator)
                 # Construct the full path for the animation file
                 animation_filename = f'{seed}_{basename}_{density}_{scene}.gif'
                 full_animation_path = os.path.join(animation_directory_name, animation_filename)
@@ -103,34 +103,18 @@ if __name__ == "__main__":
                 #plt.show() # to show the animation in your IDE (pycharm)
                 #display(anim)
 
-
-
                 survival_rates.append(evaluator.survival_rate)
                 completion_times.append(evaluator.evac_complete_time)
 
-                #print(evaluator.report())
-
-                # run_results = {
-                #     "seed": seed,
-                #     "evacuee_density": density,
-                #     "scenario": scene,
-                #     "completion_time": evaluator.evac_complete_time, # None if not completed
-                #     #"death_rate_percent": evaluator.evac_death_rate, # None if not completed
-                #     "death_rate": evaluator.death_rate,
-                # }
-
-                # all_experiment_results.append(run_results)
-
-                # Print the report for the current run
-                # print(evaluator.report())
                 print(f"Finished Run: Seed={seed}, Density={density}, Scenario={scene}")
 
             survival_rates = pad_lists(survival_rates)
             run_results = {
+                "map": filename,
                 "scenario": scene,
                 "evacuee_density": density,
-                "completion_time": np.mean(completion_times),  # None if not completed
-                "average_survival_rate": np.mean(survival_rates, axis=0),
+                "average_completion_time": np.mean(completion_times),  # None if not completed
+                "average_survival_rate": np.mean(survival_rates, axis=0).tolist(),
             }
             all_experiment_results.append(run_results)
 
