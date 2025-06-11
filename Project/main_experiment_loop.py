@@ -12,6 +12,7 @@ from EvaluationMetrics import Evaluation
 from FireAlarm_config import get_firealarm_config
 import random
 import pandas as pd
+import os
 
 def pad_lists(lists):
     max_length = max(len(sublist) for sublist in lists)
@@ -25,13 +26,17 @@ def pad_lists(lists):
 if __name__ == "__main__":
     # build & seed
     filepath = './maps/obstacles_2.png'
+    # Get the filename with extension
+    filename = os.path.basename(filepath)
+
+    # Split the filename into base name and extension
+    basename, extension = os.path.splitext(filename)
     config = get_firealarm_config('obstacles', 'one_exp3')
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
     
     # Generate seeds randomly or define them manually
-    # Generate 10 unsigned-32-bit seeds (0 through 2**32−1)
     seed_range = 2
     random.seed(42)
     seeds = [random.randint(0, 10000) for _ in range(seed_range)]
@@ -43,6 +48,9 @@ if __name__ == "__main__":
     scenarios = ["no aids"] #, "lightstrips", "firealarms", "combined"]
     
     all_experiment_results = []
+
+    animation_directory_name = "simulation-gifs"
+    os.makedirs(animation_directory_name, exist_ok=True)
 
     for scene in scenarios:
         for density in evacuee_densities:
@@ -85,15 +93,22 @@ if __name__ == "__main__":
                 evaluator = Evaluation(env)
 
                 # animation
-                anim = env.animate(steps=1000, interval=100, evaluator= evaluator)
+                anim = env.animate(steps=1000, interval=100, evaluator=evaluator)
+                # Construct the full path for the animation file
+                animation_filename = f'{seed}_{basename}_{density}_{scene}.gif'
+                full_animation_path = os.path.join(animation_directory_name, animation_filename)
+                anim.save(full_animation_path, writer='pillow', fps=5)
+                plt.close(anim._fig)
 
-                plt.show() # to show the animation in your IDE (pycharm)
-                display(anim)
+                #plt.show() # to show the animation in your IDE (pycharm)
+                #display(anim)
+
+
 
                 survival_rates.append(evaluator.survival_rate)
                 completion_times.append(evaluator.evac_complete_time)
 
-                #print(evaluator.report())  
+                #print(evaluator.report())
 
                 # run_results = {
                 #     "seed": seed,
@@ -103,9 +118,9 @@ if __name__ == "__main__":
                 #     #"death_rate_percent": evaluator.evac_death_rate, # None if not completed
                 #     "death_rate": evaluator.death_rate,
                 # }
-                
+
                 # all_experiment_results.append(run_results)
-                
+
                 # Print the report for the current run
                 # print(evaluator.report())
                 print(f"Finished Run: Seed={seed}, Density={density}, Scenario={scene}")

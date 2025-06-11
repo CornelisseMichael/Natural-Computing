@@ -358,12 +358,21 @@ class Environment:
             self._draw(ax)
             ax.set_title(f"Step {i}")
             return []
+        
+        def frame_gen():
+            """Yield 1,2,... up to `steps`, but bail out early if evaluator.complete."""
+            for i in range(1, steps + 1):
+                if evaluator and evaluator.complete:
+                    break
+                yield i
 
         ani = animation.FuncAnimation(
             fig, update,
-            frames=range(1, steps+1),
+            #frames=range(1, steps+1),
+            frames=frame_gen(),
             init_func=init,
             interval=interval,
-            blit=True
+            blit=True,
+            save_count=steps 
         )
         return ani

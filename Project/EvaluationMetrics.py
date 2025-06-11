@@ -17,8 +17,8 @@ class Evaluation:
             return
 
         total_agents = len(self.env.agents)
-        escaped_agents = sum(1 for a in self.env.agents if a.reached)
         dead_agents = sum(1 for a in self.env.agents if not a.alive)
+        escaped_agents = sum(1 for a in self.env.agents if a.reached)
 
         self.survival_rate.append(total_agents - dead_agents)
 
