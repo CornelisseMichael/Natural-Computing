@@ -45,7 +45,8 @@ if __name__ == "__main__":
     # evacuee_densities = ["small", "medium", "large"]
     evacuee_densities = ["small"]
 
-    scenarios = ["no aids", "lightstrips"]#, "firealarms", "combined"]
+    # scenarios = ["no aids", "lightstrips"]#, "firealarms", "combined"]
+    scenarios = ["firealarms"]
     
     all_experiment_results = []
 
