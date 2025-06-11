@@ -25,25 +25,25 @@ def pad_lists(lists):
 
 if __name__ == "__main__":
     # build & seed
-    filepath = './maps/obstacles_2.png'
+    filepath = './maps/offices_1.png'
     # Get the filename with extension
     filename = os.path.basename(filepath)
 
     # Split the filename into base name and extension
     basename, extension = os.path.splitext(filename)
-    config = get_firealarm_config('obstacles', 'one_exp3')
+    config = get_firealarm_config('offices', 'main')
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
     
     # Generate seeds randomly or define them manually
-    seed_range = 2
+    seed_range = 1
     random.seed(42)
     seeds = [random.randint(0, 10000) for _ in range(seed_range)]
     print(seeds)
     
     # evacuee_densities = ["small", "medium", "large"]
-    evacuee_densities = ["small"]
+    evacuee_densities = ["large"]
 
     # scenarios = ["no aids", "lightstrips"]#, "firealarms", "combined"]
     scenarios = ["firealarms"]

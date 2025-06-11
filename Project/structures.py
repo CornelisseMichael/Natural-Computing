@@ -74,9 +74,9 @@ class Environment:
     
     def compute_evacuee_count(self, density:str):
         density_map = {
-            'small': 0.10,
+            'small': 0.05,
             'medium': 0.15,
-            'large': 0.20
+            'large': 0.25
         }
         try:
             p = density_map[density]
@@ -85,7 +85,7 @@ class Environment:
         
         base = self.width * self.height
         
-        return max(1, int(base * p))
+        return max(1, int(base/4 * p))
     
     def spawn_agents(self, count: int = None, density: str = None):
         if density is not None:
@@ -210,8 +210,11 @@ class Environment:
                 norm=fire_norm,
                 alpha=1.0,
                 origin='lower',
-                zorder=1
+                zorder=1,
             )
+        # set plot limit to size of largest map
+        ax.set_ylim(0, 45)
+        ax.set_xlim(0, 70)
 
         # 2) Smoke
         smoke = self.get_layer('smoke')
@@ -260,11 +263,11 @@ class Environment:
         ]:
             if coords:
                 xs, ys = zip(*coords)
-                ax.scatter(xs, ys, c=color, s=20, edgecolors='black', marker=marker, zorder=5)
+                ax.scatter(xs, ys, c=color, s=10, edgecolors='black', marker=marker, zorder=5)
 
         if dead:
             xs, ys = zip(*dead)
-            ax.scatter(xs, ys, c='red', s=20, marker='X', zorder=5)
+            ax.scatter(xs, ys, c='red', s=10, marker='X', zorder=5)
 
         # 5) Legend with current counts
         count_healthy = sum(1 for a in self.agents if a.alive and a.health>66)
@@ -294,7 +297,7 @@ class Environment:
         dead_count   = count_dead
         exited_count = sum(1 for a in self.agents if a.reached)
         # ax.set_title(f"Alive: {alive_count}, Dead: {dead_count}, Exited: {exited_count}")
-        ax.set_xticks([]); ax.set_yticks([])
+        #ax.set_xticks([]); ax.set_yticks([])
 
         #7) aids
         light = self.get_layer('light')
