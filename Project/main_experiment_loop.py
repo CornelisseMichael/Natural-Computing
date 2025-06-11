@@ -65,7 +65,6 @@ if __name__ == "__main__":
                 env.add_layer('structure', struct)
                 
                 exits = env.get_exits()
-                print(exits)
 
                 fire = FireLayer(width,height, p_ignite=0.5, burn_time=10, spread_interval=2)
                 env.add_layer('fire', fire)

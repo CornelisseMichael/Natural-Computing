@@ -101,7 +101,6 @@ class Environment:
         struct = self.get_layer('structure')
         if struct is None:
             raise RuntimeError("Add structure layer first")
-        print(len(struct.grid))
         empties = [
             (x,y)
             for y in range(self.height)
