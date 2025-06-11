@@ -25,13 +25,13 @@ def pad_lists(lists):
 
 if __name__ == "__main__":
     # build & seed
-    filepath = './maps/offices_1.png'
+    filepath = './maps/baseline_1.png'
     # Get the filename with extension
     filename = os.path.basename(filepath)
 
     # Split the filename into base name and extension
     basename, extension = os.path.splitext(filename)
-    config = get_firealarm_config('offices', 'main')
+    config = get_firealarm_config('baseline', 'main')
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
