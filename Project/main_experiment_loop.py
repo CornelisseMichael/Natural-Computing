@@ -25,13 +25,13 @@ def pad_lists(lists):
 
 if __name__ == "__main__":
     # build & seed
-    filepath = './maps/offices_1.png'
+    filepath = './maps/baseline_1.png'
     # Get the filename with extension
     filename = os.path.basename(filepath)
 
     # Split the filename into base name and extension
     basename, extension = os.path.splitext(filename)
-    config = get_firealarm_config('offices', 'main')
+    config = get_firealarm_config('baseline', 'main')
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
             survival_rates = pad_lists(survival_rates)
             run_results = {
-                "map": filename,
+                "map": basename,
                 "scenario": scene,
                 "evacuee_density": density,
                 "average_completion_time": np.mean(completion_times),  # None if not completed
@@ -121,9 +121,9 @@ if __name__ == "__main__":
     # --- Saving All Results to CSV ---
     if all_experiment_results: # Check if there are results to save
         results_df = pd.DataFrame(all_experiment_results)
-        output_filename = "simulation_results.csv"
-        results_df.to_csv(output_filename, index=False)
-        print(f"\nAll experiment results saved to {output_filename}")
+        output_path = "./csv-outputs/" + basename + "_results.csv"
+        results_df.to_csv(output_path, index=False)
+        print(f"\nAll experiment results saved to {output_path}")
         
         # print("\n--- Sample of Saved Results ---")
         # print(results_df.head())
