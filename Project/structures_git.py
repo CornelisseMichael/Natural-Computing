@@ -10,8 +10,6 @@ import matplotlib.pyplot as plt
 from IPython.display import display, HTML, Image
 import matplotlib.animation as animation
 
-from tqdm import tqdm  
-
 
 class StructureLayer(BaseLayer):
     EMPTY, WALL, DOOR = 0,1,2
@@ -103,7 +101,6 @@ class Environment:
         struct = self.get_layer('structure')
         if struct is None:
             raise RuntimeError("Add structure layer first")
-        #print(len(struct.grid))
         empties = [
             (x,y)
             for y in range(self.height)
@@ -204,12 +201,6 @@ class Environment:
         self.time += 1
 
     def _draw(self, ax):
-        
-        ax.set_xlim(0, self.width)
-        ax.set_ylim(0, self.height)
-        ax.set_aspect('equal', adjustable='box')
-        ax.set_autoscale_on(False)
-
         # 1) Fire (bottom)
         fire = self.get_layer('fire')
         if fire:
@@ -219,10 +210,11 @@ class Environment:
                 norm=fire_norm,
                 alpha=1.0,
                 origin='lower',
-                extent=(0, self.width, 0, self.height),
-                interpolation='none',
-                zorder=1
+                zorder=1,
             )
+        # set plot limit to size of largest map
+        ax.set_ylim(0, 45)
+        ax.set_xlim(0, 70)
 
         # 2) Smoke
         smoke = self.get_layer('smoke')
@@ -232,8 +224,6 @@ class Environment:
                 cmap='Blues',
                 alpha=0.2,
                 origin='lower',
-                extent=(0, self.width, 0, self.height),
-                interpolation='none',
                 zorder=2
             )
 
@@ -248,8 +238,6 @@ class Environment:
                 cmap=ListedColormap(['gray']),
                 alpha=1.0,
                 origin='lower',
-                extent=(0, self.width, 0, self.height),
-                interpolation='none',
                 zorder=3
             )
 
@@ -259,31 +247,14 @@ class Environment:
                 cmap=ListedColormap(['black']),
                 alpha=1.0,
                 origin='lower',
-                extent=(0, self.width, 0, self.height),
-                interpolation='none',
                 zorder=4
             )
 
         # 4) Agents, color‐coded by health
-        # 0) compute a marker size that is always 40% of a cell
-        fig = ax.figure
-        # get the axes in pixels
-        bbox = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-        w_px = bbox.width  * fig.dpi
-        h_px = bbox.height * fig.dpi
-        # size (in pixels) of one grid‐cell
-        cell_px = min(w_px/self.width, h_px/self.height)
-        # choose agent diameter = 40% of cell
-        diam_px = 0.4 * cell_px
-        # convert pixels → points (1 point = 1/72 inch, and points × fig.dpi = pixels)
-        diam_pt = diam_px * 72.0 / fig.dpi
-        # scatter “s” is area in points^2
-        s = diam_pt**2
-        
-        healthy   = [(a.x + 0.5, a.y + 0.5) for a in self.agents if a.alive and not a.reached and a.health > 66]
-        mild      = [(a.x + 0.5, a.y + 0.5) for a in self.agents if a.alive and not a.reached and 33 < a.health <= 66]
-        critical  = [(a.x + 0.5, a.y + 0.5) for a in self.agents if a.alive and not a.reached and 0 < a.health <= 33]
-        dead      = [(a.x + 0.5, a.y + 0.5) for a in self.agents if not a.alive]
+        healthy   = [(a.x,a.y) for a in self.agents if a.alive and not a.reached and a.health > 66]
+        mild      = [(a.x,a.y) for a in self.agents if a.alive and not a.reached and 33 < a.health <= 66]
+        critical  = [(a.x,a.y) for a in self.agents if a.alive and not a.reached and 0 < a.health <= 33]
+        dead      = [(a.x,a.y) for a in self.agents if not a.alive]
 
         for coords, color, marker in [
             (healthy,  'green', 'o'),
@@ -292,17 +263,18 @@ class Environment:
         ]:
             if coords:
                 xs, ys = zip(*coords)
-                ax.scatter(xs, ys, c=color, s=s, edgecolors='black', marker=marker, zorder=5)
+                ax.scatter(xs, ys, c=color, s=10, edgecolors='black', marker=marker, zorder=5)
 
         if dead:
             xs, ys = zip(*dead)
-            ax.scatter(xs, ys, c='red', s=s, marker='X', zorder=5)
+            ax.scatter(xs, ys, c='red', s=10, marker='X', zorder=5)
 
         # 5) Legend with current counts
         count_healthy = sum(1 for a in self.agents if a.alive and a.health>66)
         count_mild = sum(1 for a in self.agents if a.alive and 33<a.health<=66)
         count_critical = sum(1 for a in self.agents if a.alive and 0<a.health<=33)
         count_dead = sum(1 for a in self.agents if not a.alive)
+
 
         legend_handles = [
             Line2D([0],[0], marker='o', color='w',
@@ -324,31 +296,26 @@ class Environment:
         alive_count  = sum(1 for a in self.agents if a.alive)
         dead_count   = count_dead
         exited_count = sum(1 for a in self.agents if a.reached)
-        ax.set_title(f"Alive: {alive_count}, Dead: {dead_count}, Exited: {exited_count}")
-        ax.set_xticks([]); ax.set_yticks([])
+        # ax.set_title(f"Alive: {alive_count}, Dead: {dead_count}, Exited: {exited_count}")
+        #ax.set_xticks([]); ax.set_yticks([])
 
         #7) aids
         light = self.get_layer('light')
-        cell_px = min(w_px/self.width, h_px/self.height)
-        diam_px = cell_px
-        diam_pt = diam_px * 72.0/fig.dpi
-        s_full = diam_pt**2
         if light:
             for (x, y), status in light.status.items():
-                cx, cy = x + 0.5, y + 0.5
                 color = 'cyan' if status == 'safe' else 'red'
-                ax.scatter(cx, cy, c=color, marker='s', s=s_full, edgecolors='black', linewidths=0.5, zorder=4.5)
+                ax.scatter(x, y, c=color, marker='s', s=100, edgecolors='black', linewidths=0.5, zorder=4.5)
 
         firealarm_layer = self.get_layer('firealarm')
         if firealarm_layer:
             for (x, y) in firealarm_layer.firealarm_coords:
                 # Visual circle only if radius > 0 and speakers are activated
                 if firealarm_layer.activated and firealarm_layer.radius > 0:
-                    circle = plt.Circle((x + 0.5, y + 0.5), firealarm_layer.radius, color='blue', alpha=0.2, zorder=6)
+                    circle = plt.Circle((x, y), firealarm_layer.radius, color='blue', alpha=0.2, zorder=6)
                     ax.add_patch(circle)
 
                 edge_color = 'lime' if firealarm_layer.activated else 'white'
-                ax.scatter(x + 0.5, y + 0.5, c='black', s=60, marker='^', edgecolors=edge_color, linewidths=1.5, zorder=3)
+                ax.scatter(x, y, c='black', s=60, marker='^', edgecolors=edge_color, linewidths=1.5, zorder=3)
 
     def display(self):
         fig, ax = plt.subplots(figsize=(6,6))
@@ -376,8 +343,6 @@ class Environment:
         self.reset()
         fig, ax = plt.subplots(figsize=(8,6))
         fig.subplots_adjust(right=0.75)
-        
-        pbar = tqdm(total=steps, desc="Sim frames", unit="step")
 
         def init():
             ax.clear()
@@ -391,7 +356,7 @@ class Environment:
             if evaluator:
                 evaluator.update() # Calling evaluator from evaluation metrics
                 if evaluator.complete: # Stop the animation once the last evacuee has left the structure/ has died.
-                        ani.event_source.stop()
+                    ani.event_source.stop()
             self._draw(ax)
             ax.set_title(f"Step {i}")
             return []
@@ -400,11 +365,8 @@ class Environment:
             """Yield 1,2,... up to `steps`, but bail out early if evaluator.complete."""
             for i in range(1, steps + 1):
                 if evaluator and evaluator.complete:
-                    pbar.total = pbar.n
                     break
-                pbar.update(1)
                 yield i
-            pbar.close()
 
         ani = animation.FuncAnimation(
             fig, update,
