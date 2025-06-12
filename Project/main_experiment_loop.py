@@ -37,16 +37,16 @@ if __name__ == "__main__":
     height, width = floormap.shape
     
     # Generate seeds randomly or define them manually
-    seed_range = 1
+    seed_range = 10
     random.seed(42)
     seeds = [random.randint(0, 10000) for _ in range(seed_range)]
     print(seeds)
     
-    # evacuee_densities = ["small", "medium", "large"]
-    evacuee_densities = ["small"]
+    evacuee_densities = ["small", "medium", "large"]
+    # evacuee_densities = ["small"]
 
-    # scenarios = ["no aids", "lightstrips"]#, "firealarms", "combined"]
-    scenarios = ["combined"]
+    scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
+    # scenarios = ["combined"]
     
     all_experiment_results = []
 
