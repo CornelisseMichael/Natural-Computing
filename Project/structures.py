@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 from IPython.display import display, HTML, Image
 import matplotlib.animation as animation
 
+from tqdm import tqdm  
+
 
 class StructureLayer(BaseLayer):
     EMPTY, WALL, DOOR = 0,1,2
@@ -261,11 +263,11 @@ class Environment:
         ]:
             if coords:
                 xs, ys = zip(*coords)
-                ax.scatter(xs, ys, c=color, s=20, edgecolors='black', marker=marker, zorder=5)
+                ax.scatter(xs, ys, c=color, s=10, edgecolors='black', marker=marker, zorder=5)
 
         if dead:
             xs, ys = zip(*dead)
-            ax.scatter(xs, ys, c='red', s=20, marker='X', zorder=5)
+            ax.scatter(xs, ys, c='red', s=10, marker='X', zorder=5)
 
         # 5) Legend with current counts
         count_healthy = sum(1 for a in self.agents if a.alive and a.health>66)
@@ -340,6 +342,8 @@ class Environment:
         self.reset()
         fig, ax = plt.subplots(figsize=(8,6))
         fig.subplots_adjust(right=0.75)
+        
+        pbar = tqdm(total=steps, desc="Sim frames", unit="step")
 
         def init():
             ax.clear()
@@ -353,11 +357,7 @@ class Environment:
             if evaluator:
                 evaluator.update() # Calling evaluator from evaluation metrics
                 if evaluator.complete: # Stop the animation once the last evacuee has left the structure/ has died.
-                    # only stop & close if we're in a live GUI session
-                    if getattr(ani, "event_source", None) is not None:
                         ani.event_source.stop()
-                        plt.close(fig)
-                    return []
             self._draw(ax)
             ax.set_title(f"Step {i}")
             return []
@@ -366,8 +366,11 @@ class Environment:
             """Yield 1,2,... up to `steps`, but bail out early if evaluator.complete."""
             for i in range(1, steps + 1):
                 if evaluator and evaluator.complete:
+                    pbar.total = pbar.n
                     break
+                pbar.update(1)
                 yield i
+            pbar.close()
 
         ani = animation.FuncAnimation(
             fig, update,
@@ -378,6 +381,4 @@ class Environment:
             blit=True,
             save_count=steps 
         )
-        
-        plt.show() 
         return ani
