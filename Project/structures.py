@@ -76,9 +76,9 @@ class Environment:
     
     def compute_evacuee_count(self, density:str):
         density_map = {
-            'small': 0.10,
+            'small': 0.05,
             'medium': 0.15,
-            'large': 0.20
+            'large': 0.25
         }
         try:
             p = density_map[density]
@@ -87,7 +87,7 @@ class Environment:
         
         base = self.width * self.height
         
-        return max(1, int(base * p))
+        return max(1, int(base/4 * p))
     
     def spawn_agents(self, count: int = None, density: str = None):
         if density is not None:
@@ -103,7 +103,6 @@ class Environment:
         struct = self.get_layer('structure')
         if struct is None:
             raise RuntimeError("Add structure layer first")
-        print(len(struct.grid))
         empties = [
             (x,y)
             for y in range(self.height)
@@ -213,8 +212,11 @@ class Environment:
                 norm=fire_norm,
                 alpha=1.0,
                 origin='lower',
-                zorder=1
+                zorder=1,
             )
+        # set plot limit to size of largest map
+        ax.set_ylim(0, 45)
+        ax.set_xlim(0, 70)
 
         # 2) Smoke
         smoke = self.get_layer('smoke')
@@ -275,6 +277,7 @@ class Environment:
         count_critical = sum(1 for a in self.agents if a.alive and 0<a.health<=33)
         count_dead = sum(1 for a in self.agents if not a.alive)
 
+
         legend_handles = [
             Line2D([0],[0], marker='o', color='w',
                    label=f'Healthy: {count_healthy}',
@@ -295,8 +298,8 @@ class Environment:
         alive_count  = sum(1 for a in self.agents if a.alive)
         dead_count   = count_dead
         exited_count = sum(1 for a in self.agents if a.reached)
-        ax.set_title(f"Alive: {alive_count}, Dead: {dead_count}, Exited: {exited_count}")
-        ax.set_xticks([]); ax.set_yticks([])
+        # ax.set_title(f"Alive: {alive_count}, Dead: {dead_count}, Exited: {exited_count}")
+        #ax.set_xticks([]); ax.set_yticks([])
 
         #7) aids
         light = self.get_layer('light')
@@ -357,7 +360,7 @@ class Environment:
             if evaluator:
                 evaluator.update() # Calling evaluator from evaluation metrics
                 if evaluator.complete: # Stop the animation once the last evacuee has left the structure/ has died.
-                        ani.event_source.stop()
+                    ani.event_source.stop()
             self._draw(ax)
             ax.set_title(f"Step {i}")
             return []

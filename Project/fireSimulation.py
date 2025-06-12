@@ -1,4 +1,3 @@
-
 from baseClasses import BaseLayer
 import random
 
@@ -47,7 +46,7 @@ class FireLayer(BaseLayer):
                 elif state == self.UNBURNED and \
                      (self._step_count % self.spread_interval) == 0:
                     for dx, dy in self.neighborhood:
-                        if abs(dx) == abs(dy) and random.random() < 0.537:
+                        if abs(dx) == abs(dy) and random.random() < 0.5:
                             continue
                         ny, nx = y+dy, x+dx
                         if (0 <= nx < self.width and

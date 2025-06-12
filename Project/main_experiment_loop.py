@@ -14,6 +14,14 @@ import random
 import pandas as pd
 import os
 
+def pad_lists(lists):
+    max_length = max(len(sublist) for sublist in lists)
+    padded_lists = [
+        sublist + [sublist[-1]] * (max_length - len(sublist))
+        for sublist in lists
+    ]
+    return padded_lists
+
 
 if __name__ == "__main__":
     # build & seed
@@ -23,7 +31,7 @@ if __name__ == "__main__":
 
     # Split the filename into base name and extension
     basename, extension = os.path.splitext(filename)
-    config = get_firealarm_config('offices', 'three_exp4')
+    config = get_firealarm_config('offices', 'main')
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
@@ -34,21 +42,22 @@ if __name__ == "__main__":
     seeds = [random.randint(0, 10000) for _ in range(seed_range)]
     print(seeds)
     
-    evacuee_densities = ["small", "medium", "large"]
-    
+    # evacuee_densities = ["small", "medium", "large"]
     evacuee_densities = ["small"]
 
-    #scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
-    
-    scenarios = ["no aids"]
+    # scenarios = ["no aids", "lightstrips"]#, "firealarms", "combined"]
+    scenarios = ["combined"]
     
     all_experiment_results = []
+
     animation_directory_name = "simulation-gifs"
     os.makedirs(animation_directory_name, exist_ok=True)
-    
-    for seed in seeds:
+
+    for scene in scenarios:
         for density in evacuee_densities:
-            for scene in scenarios:
+            survival_rates = []
+            completion_times = []
+            for seed in seeds:
                 print(f"\n--- Starting Run: Seed={seed}, Density={density}, Scenario={scene} ---")
 
                 env = Environment(width, height).set_seed(seed)
@@ -57,7 +66,6 @@ if __name__ == "__main__":
                 env.add_layer('structure', struct)
                 
                 exits = env.get_exits()
-                print(exits)
 
                 fire = FireLayer(width,height, p_ignite=0.5, burn_time=10, spread_interval=2)
                 env.add_layer('fire', fire)
@@ -85,7 +93,7 @@ if __name__ == "__main__":
                 evaluator = Evaluation(env)
 
                 # animation
-                anim = env.animate(steps=1000, interval=100, evaluator=evaluator)
+                anim = env.animate(steps=150, interval=100, evaluator=evaluator)
                 # Construct the full path for the animation file
                 animation_filename = f'{seed}_{basename}_{density}_{scene}.gif'
                 full_animation_path = os.path.join(animation_directory_name, animation_filename)
@@ -95,21 +103,20 @@ if __name__ == "__main__":
                 #plt.show() # to show the animation in your IDE (pycharm)
                 #display(anim)
 
-                #print(evaluator.report())  
+                survival_rates.append(evaluator.survival_rate)
+                completion_times.append(evaluator.evac_complete_time)
 
-                run_results = {
-                    "seed": seed,
-                    "evacuee_density": density,
-                    "scenario": scene,
-                    "completion_time": evaluator.evac_complete_time, # None if not completed
-                    "death_rate_percent": evaluator.evac_death_rate, # None if not completed
-                }
-                
-                all_experiment_results.append(run_results)
-                
-                # Print the report for the current run
-                print(evaluator.report()) 
                 print(f"Finished Run: Seed={seed}, Density={density}, Scenario={scene}")
+
+            survival_rates = pad_lists(survival_rates)
+            run_results = {
+                "map": filename,
+                "scenario": scene,
+                "evacuee_density": density,
+                "average_completion_time": np.mean(completion_times),  # None if not completed
+                "average_survival_rate": np.mean(survival_rates, axis=0).tolist(),
+            }
+            all_experiment_results.append(run_results)
 
     # --- Saving All Results to CSV ---
     if all_experiment_results: # Check if there are results to save

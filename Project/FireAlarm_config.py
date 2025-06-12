@@ -1,7 +1,13 @@
 # firealarm_configs.py, holds the selection of experimental combination coordinates for the fire alarms. Also includes a function that gets the coords and radius values
 
+
+
 FIRE_ALARM_CONFIGS = {
     'baseline': {
+        'main': {
+            'coords': [(7, 7), (7, 22), (22, 22), (22, 7)],
+            'radius': 6
+        },
         'corners_exp1': {
             'coords': [(7, 7), (7, 22), (22, 22), (22, 7)],
             'radius': 6
@@ -25,6 +31,10 @@ FIRE_ALARM_CONFIGS = {
     },
 
     'threedoors': {
+        'main': {
+            'coords': [(7, 7), (7, 22), (22, 22), (22, 7)],
+            'radius': 6
+        },
         'corners_exp2': {
             'coords': [(7, 7), (7, 22), (22, 22), (22, 7)],
             'radius': 6
@@ -48,6 +58,10 @@ FIRE_ALARM_CONFIGS = {
     },
 
     'obstacles': {
+        'main': {
+            'coords': [(8, 22), (8, 7), (21, 15), (32, 7), (32, 22)],
+            'radius': 6
+        },
         'five_exp3': {
             'coords': [(8, 22), (8, 7), (21, 15), (32, 7), (32, 22)],
             'radius': 6
@@ -71,6 +85,11 @@ FIRE_ALARM_CONFIGS = {
     },
 
     'offices': {
+        'main': {
+            'coords': [(5, 7), (15, 7), (25, 7), (35, 7), (45, 7), (55, 7), (63, 7),
+                       (5, 37), (15, 37), (25, 37), (35, 37), (47, 37), (11, 22), (33, 22), (55, 22)],
+            'radius': 6
+        },
         'max_exp4': {
             'coords': [(5, 7), (15, 7), (25, 7), (35, 7), (45, 7), (55, 7), (63, 7),
                        (5, 37), (15, 37), (25, 37), (35, 37), (47, 37), (11, 22), (33, 22), (55, 22)],
