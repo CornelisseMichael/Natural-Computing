@@ -1,5 +1,5 @@
 
-# Adaptive Evacuation Strategies for House Fires Modeled by Cellular Automata
+# Modeling Indoor Fire Evacuation with Adaptive Multi-Layer Cellular Automata
 
 ## Overview
 This project simulates building fire evacuations using a grid-based cellular automaton. It models fire spread, smoke diffusion, evacuee agents with A* pathfinding and panic behaviors, and includes evacuation aids like light strips and fire alarms. The simulation can be run across multiple scenarios and densities, generating animations and evaluation metrics for analysis.
