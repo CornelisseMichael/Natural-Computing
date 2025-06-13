@@ -51,7 +51,7 @@ if __name__ == "__main__":
     all_experiment_results = []
 
     animation_directory_name = "simulation-gifs"
-    animation_sub_directory_name = f"{basename}_gifs"
+    animation_sub_directory_name = f"{basename}"
     animation_directory_path = os.path.join(animation_directory_name, animation_sub_directory_name)
     os.makedirs(animation_directory_path, exist_ok=True)
 
