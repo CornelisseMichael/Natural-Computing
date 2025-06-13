@@ -4,3 +4,4 @@ matplotlib
 pillow
 ipython
 tqdm
+jupyter
