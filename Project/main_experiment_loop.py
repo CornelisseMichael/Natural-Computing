@@ -25,13 +25,13 @@ def pad_lists(lists):
 
 if __name__ == "__main__":
     # build & seed
-    filepath = './maps/baseline_1.png'
+    filepath = './maps/threedoors.png'
     # Get the filename with extension
     filename = os.path.basename(filepath)
 
     # Split the filename into base name and extension
     basename, extension = os.path.splitext(filename)
-    config = get_firealarm_config('baseline', 'main')
+    config = get_firealarm_config('threedoors', 'main')
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                 animation_filename = f'{seed}_{basename}_{density}_{scene}.gif'
                 full_animation_path = os.path.join(animation_directory_name, animation_filename)
                 anim.save(full_animation_path, writer='pillow', fps=5)
-                #plt.close(anim._fig)
+                plt.close(anim._fig)
 
                 #plt.show() # to show the animation in your IDE (pycharm)
                 #display(anim)
