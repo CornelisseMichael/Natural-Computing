@@ -25,13 +25,13 @@ def pad_lists(lists):
 
 if __name__ == "__main__":
     # build & seed
-    filepath = './maps/offices_1.png'
+    filepath = './maps/baseline_1.png'
     # Get the filename with extension
     filename = os.path.basename(filepath)
 
     # Split the filename into base name and extension
     basename, extension = os.path.splitext(filename)
-    config = get_firealarm_config('offices', 'main')
+    config = get_firealarm_config('baseline', 'main')
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
@@ -43,15 +43,17 @@ if __name__ == "__main__":
     print(seeds)
     
     evacuee_densities = ["small", "medium", "large"]
-    # evacuee_densities = ["small"]
+    #evacuee_densities = ["small"]
 
     scenarios = ["no aids", "lightstrips", "firealarms", "combined"]
-    # scenarios = ["combined"]
+    #scenarios = ["combined"]
     
     all_experiment_results = []
 
     animation_directory_name = "simulation-gifs"
-    os.makedirs(animation_directory_name, exist_ok=True)
+    animation_sub_directory_name = f"{basename}_gifs"
+    animation_directory_path = os.path.join(animation_directory_name, animation_sub_directory_name)
+    os.makedirs(animation_directory_path, exist_ok=True)
 
     for scene in scenarios:
         for density in evacuee_densities:
@@ -96,14 +98,9 @@ if __name__ == "__main__":
                 anim = env.animate(steps=500, interval=100, evaluator=evaluator)
                 # Construct the full path for the animation file
                 animation_filename = f'{seed}_{basename}_{density}_{scene}.gif'
-                full_animation_path = os.path.join(animation_directory_name, f'{basename}_gifs', animation_filename)
-                # ensure the parent directory exists
-                os.makedirs(os.path.dirname(full_animation_path), exist_ok=True)
+                full_animation_path = os.path.join(animation_directory_path, animation_filename)
                 anim.save(full_animation_path, writer='pillow', fps=5)
                 plt.close(anim._fig)
-
-                #plt.show() # to show the animation in your IDE (pycharm)
-                #display(anim)
 
                 survival_rates.append(evaluator.survival_rate)
                 completion_times.append(evaluator.evac_complete_time)
