@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib
 
-from mapLoading import loadFromImage
+from src.mapLoading import loadFromImage
 
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt

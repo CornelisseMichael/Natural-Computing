@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image
+from pathlib import Path
 import os
 EMPTY, TREE, FIRE, WALL, EXIT = 0, 1, 2, 3, 4
 
@@ -7,8 +8,11 @@ EMPTY, TREE, FIRE, WALL, EXIT = 0, 1, 2, 3, 4
 # if many values become empty the color profile might not be set correctly
 # for testing sRGB was used and the image was saved as PNG24
 def loadFromImage(path, source=None):
-    base_path = os.path.dirname(__file__)
-    full_path = os.path.join(base_path, path)
+    #base_path = os.path.dirname(__file__)
+    #full_path = os.path.join(base_path, path)
+    project_root = Path(__file__).parent.parent
+    
+    full_path    = project_root / path    
 
     image = Image.open(full_path)
     if image.mode != 'RGB':

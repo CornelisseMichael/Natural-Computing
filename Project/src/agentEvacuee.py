@@ -1,5 +1,5 @@
 #from baseClasses import Environment
-from fireSimulation import FireLayer
+from src.fireSimulation import FireLayer
 from math import ceil
 import random
 import heapq

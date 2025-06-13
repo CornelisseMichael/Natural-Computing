@@ -1,5 +1,5 @@
-from baseClasses import BaseLayer
-from agentEvacuee import EvacueeAgent
+from src.baseClasses import BaseLayer
+from src.agentEvacuee import EvacueeAgent
 import random
 from typing import Optional, Sequence, Tuple
 import numpy as np
@@ -9,7 +9,6 @@ import copy
 import matplotlib.pyplot as plt
 from IPython.display import display, HTML, Image
 import matplotlib.animation as animation
-
 from tqdm import tqdm  
 
 

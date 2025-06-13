@@ -1,21 +1,21 @@
 # You’ll need display() to render in Colab/Jupyter
 from IPython.display import display, HTML, Image
-from structures import Environment
-from structures import StructureLayer
-from fireSimulation import FireLayer, SmokeLayer
-from aids import LightStripLayer, FireAlarmLayer
+from src.structures import Environment
+from src.structures import StructureLayer
+from src.fireSimulation import FireLayer, SmokeLayer
+from src.aids import LightStripLayer, FireAlarmLayer
 import matplotlib; matplotlib.use("TkAgg") #to run the animations in PyCharm
 import matplotlib.pyplot as plt
-from mapLoading import *
+from src.mapLoading import *
 import numpy as np
-from EvaluationMetrics import Evaluation
-from FireAlarm_config import get_firealarm_config
+from src.EvaluationMetrics import Evaluation
+from src.config.FireAlarm_config import get_firealarm_config
 import random
 
 if __name__ == "__main__":
     # build & seed
 
-    filepath = './maps/obstacles_2.png'
+    filepath = 'maps/obstacles_2.png'
 
     floormap = loadFromImage(filepath)
     height, width = floormap.shape
