@@ -30,30 +30,3 @@ for key, value in grouped_arrays.items():
     # plt.legend(labels)
     plt.show()
 
-
-# survival_rates = df['average_survival_rate'].values
-# labels = df['evacuee_density'].values
-# survival_rates = [np.fromstring(sr.lstrip('[').rstrip(']'), sep=',') for sr in survival_rates]
-# # survival_rates = np.asarray(survival_rates)
-# print(survival_rates)
-#
-#
-#
-# for i, sr in enumerate(survival_rates):
-#     # np.fromstring(sr.lstrip('[').rstrip(']'), sep=',')
-#     survival_rates[i] = normalize_to_percentages(sr)
-#
-# for i, sr in enumerate(survival_rates):
-#     # if i < 3:
-#     #     c = 'blue'
-#     # elif i < 6:
-#     #     c = 'red'
-#     # elif i < 9:
-#     #     c = 'green'
-#     # else:
-#     #     c = 'orange'
-#     plt.plot(sr)
-#     plt.legend(labels)
-#
-# plt.show()
-
